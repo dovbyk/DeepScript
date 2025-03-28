@@ -77,6 +77,7 @@ GDAL==3.4.1
 glyphsLib==6.9.5
 google-pasta==0.2.0
 grpcio==1.70.0
+gunicorn
 h11==0.14.0
 h5py==3.13.0
 html5lib==1.1
