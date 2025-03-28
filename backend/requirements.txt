@@ -3,7 +3,6 @@ aiohttp==3.8.1
 aiosignal==1.2.0
 anyio==4.7.0
 appdirs==1.4.4
-apt-clone==0.2.1
 apturl==0.5.2
 argon2-cffi==23.1.0
 argon2-cffi-bindings==21.2.0
