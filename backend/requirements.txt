@@ -3,5 +3,3 @@ Flask-Cors>=3.0
 opencv-python>=4.7
 numpy>=1.21
 Pillow>=9.0
-fontforge
-psMat
