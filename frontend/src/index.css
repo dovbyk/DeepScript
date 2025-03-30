@@ -1,6 +1,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Agency+FB:wght@400;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -46,9 +46,11 @@
   body {
     @apply bg-background text-foreground min-h-screen;
     font-feature-settings: "ss01", "ss02", "cv01", "cv02";
+    font-family: 'Montserrat', sans-serif;
   }
-   h1, h2, h3, h4, h5, h6 {
-    @apply font-agency font-medium tracking-tight;
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-agency font-bold tracking-tight;
   }
 
   @font-face {
