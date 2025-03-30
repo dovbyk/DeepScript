@@ -1,8 +1,9 @@
 # Use the official Python 3.11 slim image as the base image
 FROM python:3.11-slim
 
-# Install necessary system libraries for OpenCV and its dependencies
+# Install necessary system libraries including fontforge for its Python module
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
+    fontforge \
     libgl1 \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
