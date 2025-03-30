@@ -3,12 +3,8 @@ import React from 'react';
 const About: React.FC = () => {
   return (
     <div className="glass-panel p-8 animate-fade-in mb-16">
- <AnimatedText
-            text="Description"
-            el="h2"
-            className="text-3xl md:text-5xl font-bold mb-6"
-            animation="blur-in"
-          />      
+      <h2 className="font-agency text-3xl text-center mb-8">DESCRIPTION</h2>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
           <h3 className="text-xl font-medium mb-4">Our Mission</h3>
