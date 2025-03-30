@@ -1,47 +1,46 @@
-# Use an Ubuntu base image which has better support for fontforge
-FROM ubuntu:20.04
+# Use Alpine Linux with Python 3.9
+FROM python:3.9-alpine
 
-# Set environment variables to avoid interactive prompts during installation
-ENV DEBIAN_FRONTEND=noninteractive
-ENV PYTHONUNBUFFERED=1
-
-# Install Python 3.9, pip, and necessary system dependencies
-RUN apt-get update && apt-get install -y \
-    python3.9 \
-    python3.9-distutils \
-    python3-pip \
+# Install fontforge and required dependencies
+RUN apk add --no-cache \
     fontforge \
-    python3-fontforge \
-    libgl1 \
-    libglib2.0-0 \
-    wget \
-    curl \
-    git \
-    && rm -rf /var/lib/apt/lists/*
+    fontforge-dev \
+    python3-dev \
+    py3-pip \
+    gcc \
+    musl-dev \
+    jpeg-dev \
+    zlib-dev \
+    freetype-dev \
+    lcms2-dev \
+    openjpeg-dev \
+    tiff-dev \
+    tk-dev \
+    tcl-dev \
+    harfbuzz-dev \
+    fribidi-dev \
+    libffi-dev
 
-# Set Python 3.9 as the default Python version
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1 \
-    && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 1
-
-# Ensure pip is available and updated
-RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python get-pip.py && rm get-pip.py
+# Make python-fontforge available in Python path
+RUN ln -s /usr/lib/python3*/site-packages/fontforge.so /usr/local/lib/python3.9/site-packages/
+RUN ln -s /usr/lib/python3*/site-packages/_fontforge.so /usr/local/lib/python3.9/site-packages/ || true
+RUN ln -s /usr/lib/python3*/site-packages/fontforge.py /usr/local/lib/python3.9/site-packages/
 
 # Set the working directory
 WORKDIR /backend
 
-# Copy requirements file and install dependencies
+# Copy requirements and install Python dependencies
 COPY requirements.txt .
-RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy your application code
+# Copy application code
 COPY . .
 
-# Verify fontforge is available (for debugging, can be removed later)
-RUN python3 -c "import sys; print(sys.path)"
-RUN python3 -c "import fontforge; print('FontForge is available')"
+# Verify fontforge is available
+RUN python -c "import fontforge; print('FontForge is available')"
 
 # Expose the port your application uses
 EXPOSE 5000
 
 # Start the application
-CMD ["python3", "-m", "gunicorn", "--bind", "0.0.0.0:5000", "server:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "server:app"]
