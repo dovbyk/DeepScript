@@ -140,9 +140,8 @@ const Index = () => {
       className="max-w-[min(100%,800px)] w-auto h-[clamp(80px,20vmin,200px)] md:h-[clamp(100px,25vmin,300px)]" // Adjust sizing as needed
     />
   </div>
-          <p className="text-lg md:text-xl text-muted-foreground animate-fade-in">
-            Transform your text with custom font styling
-          </p>
+       <h2 className="font-agency font-bold text-3xl md:text-5xl text-center mb-6">TRANSFORM YOUR TEXT INTO CUSTOM FONTS</h2>
+
         </header>
 
         <div className="grid grid-cols-1 gap-12">
