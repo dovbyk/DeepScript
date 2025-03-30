@@ -35,7 +35,7 @@ const Contributors: React.FC = () => {
     {
       name: "Sarah Chen",
       role: "Frontend Development",
-      image: "/img.jpg"
+      image: "/img3.jpg"
     },
     {
       name: "Michael Peters",
