@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 const About: React.FC = () => {
   return (
     <div className="glass-panel p-8 animate-fade-in mb-16">
-       <h2 className="font-agency text-3xl text-center mb-8">DESCRIPTION</h2>
+       <h2 className="font-agency font-bold text-3xl text-center mb-8">DESCRIPTION</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
