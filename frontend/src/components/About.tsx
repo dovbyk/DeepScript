@@ -13,10 +13,11 @@ const About: React.FC = () => {
           <h3 className="text-xl font-medium mb-4">About</h3>
           <p className="text-muted-foreground mb-6">
             DeepScript is an open-source handwriting simulation model which can render texts with a custom handwritten font. Users can either use our 
-            built-in fonts or can upload their own handwriting sample too. For uploading your sample, draw each glyph that you want to add in your 
-            font and upload a scanned image. Note that only the glyphs that you provide will be used in the font so don't miss any glyph. After selecting the font, user can have a look at the preview of their output so that they can fix the initial preprocessing steps. 
-            Then, the user can simply download the PDF file.
+            built-in fonts or can upload their own handwriting sample too. For uploading your sample, draw each glyph that you want to add and upload a scanned image. Note that only the glyphs that you provide will be used in your font. After selecting the font, user can have a look at the preview of their output so that they can fix the initial preprocessing steps.
           </p>
+            <p className="text-muted-foreground mb-6">
+DeepScript is a capstone mini-project developed as part of our sixth-semester curriculum at KIIT. Our dedicated team has contributed their utmost effort and expertise to deliver a high-quality, innovative solution.
+            </p>
 
         </div>
         
