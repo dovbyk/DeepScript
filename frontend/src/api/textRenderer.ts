@@ -17,7 +17,7 @@ export async function renderText({ text, fontFile }: RenderTextOptions): Promise
     console.log("Sending font file:", fontFile.name);
     
     // Send request to backend
-    const response = await fetch('http://localhost:5000/render', {
+    const response = await fetch('https://deepscript-o12c.onrender.com', {
       method: 'POST',
       body: formData,
     });
