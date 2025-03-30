@@ -1,9 +1,11 @@
 # Use the official Python 3.11 slim image as the base image
 FROM python:3.11-slim
 
-# Install the necessary system library for OpenCV (libGL)
+# Install necessary system libraries for OpenCV and its dependencies
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
-    libgl1 && rm -rf /var/lib/apt/lists/*
+    libgl1 \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory inside the container
 WORKDIR /backend
@@ -15,7 +17,7 @@ RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 # Copy your backend code into the container
 COPY . .
 
-# Expose the port that your Flask app listens on (default is 5000)
+# Expose the port that your Flask app listens on
 EXPOSE 5000
 
 # Start the application using Gunicorn
