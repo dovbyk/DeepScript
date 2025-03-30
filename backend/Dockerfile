@@ -1,33 +1,47 @@
-# Use the official Python 3.9 image (non-slim) as the base image
-FROM python:3.9
+# Use an Ubuntu base image which has better support for fontforge
+FROM ubuntu:20.04
 
-# Install necessary system libraries including FontForge and its Python bindings
+# Set environment variables to avoid interactive prompts during installation
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
+
+# Install Python 3.9, pip, and necessary system dependencies
 RUN apt-get update && apt-get install -y \
+    python3.9 \
+    python3.9-distutils \
+    python3-pip \
     fontforge \
     python3-fontforge \
     libgl1 \
     libglib2.0-0 \
+    wget \
+    curl \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
-# Create a symlink to make python-fontforge available to Python
-RUN ln -s /usr/lib/python3/dist-packages/fontforge.so /usr/local/lib/python3.9/site-packages/
-RUN ln -s /usr/lib/python3/dist-packages/fontforge.py /usr/local/lib/python3.9/site-packages/
+# Set Python 3.9 as the default Python version
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1 \
+    && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 1
 
-# Set the working directory inside the container
+# Ensure pip is available and updated
+RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python get-pip.py && rm get-pip.py
+
+# Set the working directory
 WORKDIR /backend
 
-# Copy the requirements file and install Python dependencies
+# Copy requirements file and install dependencies
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
-# Copy your backend code into the container
+# Copy your application code
 COPY . .
 
-# Test if fontforge is importable
-RUN python -c "import fontforge; print('FontForge is available')"
+# Verify fontforge is available (for debugging, can be removed later)
+RUN python3 -c "import sys; print(sys.path)"
+RUN python3 -c "import fontforge; print('FontForge is available')"
 
-# Expose the port that your Flask app listens on
+# Expose the port your application uses
 EXPOSE 5000
 
-# Start the application using Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "server:app"]
+# Start the application
+CMD ["python3", "-m", "gunicorn", "--bind", "0.0.0.0:5000", "server:app"]
