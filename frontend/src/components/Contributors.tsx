@@ -35,7 +35,7 @@ const Contributors: React.FC = () => {
     {
       name: "Sarah Chen",
       role: "Frontend Development",
-      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=300&h=300&fit=crop&crop=faces"
+      image: "/img.jpg"
     },
     {
       name: "Michael Peters",
