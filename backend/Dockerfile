@@ -1,11 +1,12 @@
 # Use the official Python 3.11 slim image as the base image
 FROM python:3.11-slim
 
-# Install necessary system libraries including fontforge for its Python module
+# Install necessary system libraries including FontForge and its Python bindings
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
-    fontforge \
     libgl1 \
     libglib2.0-0 \
+    fontforge \
+    python3-fontforge \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory inside the container
