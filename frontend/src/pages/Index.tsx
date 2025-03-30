@@ -133,9 +133,13 @@ const Index = () => {
     <div className="min-h-screen watermark-background pt-12 pb-20 px-4 md:px-8">
       <div className="max-w-6xl mx-auto">
         <header className="mb-16 text-center animate-slide-down">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 text-gradient leading-tight max-w-4xl mx-auto font-agency">
-            DEEPSCRIPT
-          </h1>
+          <div className="flex justify-center mb-6">
+    <img 
+      src="/logo.png" // Update this with your actual image filename
+      alt="DeepScript Logo"
+      className="max-w-full h-auto max-h-24 md:max-h-32 lg:max-h-40" // Adjust sizing as needed
+    />
+  </div>
           <p className="text-lg md:text-xl text-muted-foreground animate-fade-in">
             Transform your text with custom font styling
           </p>
