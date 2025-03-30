@@ -10,14 +10,15 @@ const About: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
-          <h3 className="text-xl font-medium mb-4">Our Mission</h3>
+          <h3 className="text-xl font-medium mb-4">About</h3>
           <p className="text-muted-foreground mb-6">
-            Fontify was created with a single purpose: to democratize font styling and make custom typography accessible to everyone. 
-            We believe that beautiful text should not be limited by technical knowledge or expensive software.
+            DeepScript is an open-source handwriting simulation model which can render texts into a custom handwritten font. Users can either use our 
+            built-in fonts or can upload their own handwriting sample too. For uploading your sample, draw each glyph that you want to add in your 
+            font and upload a scanned image. Note that only the glyphs that you provide will be used in the font so don't miss any glyph. 
           </p>
           <p className="text-muted-foreground">
-            Our platform allows you to transform ordinary text into stunning visual compositions through an 
-            intuitive interface, whether you're a professional designer or just starting your creative journey.
+            After selecting the font, user can have a look at the preview of their output so that they can fix the initial preprocessing steps. 
+            Then, the user can simply download the PDF file.
           </p>
         </div>
         
@@ -30,7 +31,7 @@ const About: React.FC = () => {
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               </span>
-              <span>Real-time text editing with instant preview</span>
+              <span>Real-time text editing</span>
             </li>
             <li className="flex items-start">
               <span className="inline-block bg-accent text-black rounded-full p-1 mr-2">
@@ -38,7 +39,7 @@ const About: React.FC = () => {
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               </span>
-              <span>Curated font library with diverse styling options</span>
+              <span>Built-in handwritten fonts for diverse styles</span>
             </li>
             <li className="flex items-start">
               <span className="inline-block bg-accent text-black rounded-full p-1 mr-2">
@@ -54,7 +55,7 @@ const About: React.FC = () => {
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               </span>
-              <span>AI-powered font generation from handwriting samples</span>
+              <span>Instant preview of the output</span>
             </li>
             <li className="flex items-start">
               <span className="inline-block bg-accent text-black rounded-full p-1 mr-2">
