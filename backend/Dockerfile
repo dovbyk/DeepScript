@@ -9,6 +9,9 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
+# Add the directory containing the FontForge Python module to PYTHONPATH
+ENV PYTHONPATH="/usr/lib/python3/dist-packages:${PYTHONPATH}"
+
 # Set the working directory inside the container
 WORKDIR /backend
 
@@ -16,7 +19,7 @@ WORKDIR /backend
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of your backend code into the container
+# Copy your backend code into the container
 COPY . .
 
 # Expose the port that your Flask app listens on
