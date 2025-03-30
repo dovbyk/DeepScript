@@ -1,25 +1,20 @@
-# Use the official Python 3.11 slim image as the base image
+# Use a lightweight Python image
 FROM python:3.11-slim
 
-# Install system dependencies required by fontforge and potrace
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    fontforge \
-    potrace \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
-
-# Set the working directory in the container (you can name it /backend or any other name)
+# Set the working directory inside the container
 WORKDIR /backend
 
-# Copy the requirements file and install Python dependencies
-COPY requirements.txt .
-RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
+# Copy only necessary files first to optimize Docker caching
+COPY backend/requirements.txt .
 
-# Copy your backend code into the container
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the backend code
 COPY . .
 
-# Expose the port that your Flask app listens on (default is 5000)
+# Expose the port your Flask app runs on
 EXPOSE 5000
 
-# Set the entrypoint command to run your app with Gunicorn
-CMD ["gunicorn", "server:app"]
+# Run the application using Gunicorn
+CMD ["gunicorn", "server:app", "--bind", "0.0.0.0:5000"]
