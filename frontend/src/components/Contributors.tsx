@@ -19,8 +19,8 @@ const Contributor: React.FC<ContributorProps> = ({ name, role, image, isLead = f
         </AvatarFallback>
       )}
     </Avatar>
-    <h3 className={`font-medium ${isLead ? 'text-2xl' : 'text-base'}`}>{name}</h3>
-    <p className="text-sm text-muted-foreground text-center max-w-[200px]">{role}</p>
+    <h3 className={`font-medium ${isLead ? 'text-4xl' : 'text-3xl'}`}>{name}</h3>
+    <p className="text-lg text-muted-foreground text-center max-w-[200px]">{role}</p>
   </div>
 );
 
