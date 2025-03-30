@@ -1,46 +1,26 @@
-# Use Alpine Linux with Python 3.9
-FROM python:3.9-alpine
+# Use the official Python 3.9 image (non-slim) as the base image
+FROM python:3.9
 
-# Install fontforge and required dependencies
-RUN apk add --no-cache \
+# Install necessary system libraries including FontForge and its Python bindings
+RUN apt-get update && apt-get install -y \
     fontforge \
-    fontforge-dev \
-    python3-dev \
-    py3-pip \
-    gcc \
-    musl-dev \
-    jpeg-dev \
-    zlib-dev \
-    freetype-dev \
-    lcms2-dev \
-    openjpeg-dev \
-    tiff-dev \
-    tk-dev \
-    tcl-dev \
-    harfbuzz-dev \
-    fribidi-dev \
-    libffi-dev
+    python3-fontforge \
+    libgl1 \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Make python-fontforge available in Python path
-RUN ln -s /usr/lib/python3*/site-packages/fontforge.so /usr/local/lib/python3.9/site-packages/
-RUN ln -s /usr/lib/python3*/site-packages/_fontforge.so /usr/local/lib/python3.9/site-packages/ || true
-RUN ln -s /usr/lib/python3*/site-packages/fontforge.py /usr/local/lib/python3.9/site-packages/
-
-# Set the working directory
+# Set the working directory inside the container
 WORKDIR /backend
 
-# Copy requirements and install Python dependencies
+# Copy the requirements file and install Python dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
+# Copy your backend code into the container
 COPY . .
 
-# Verify fontforge is available
-RUN python -c "import fontforge; print('FontForge is available')"
-
-# Expose the port your application uses
+# Expose the port that your Flask app listens on
 EXPOSE 5000
 
-# Start the application
+# Start the application using Gunicorn
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "server:app"]
