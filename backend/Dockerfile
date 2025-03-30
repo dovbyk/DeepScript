@@ -1,16 +1,13 @@
-# Use Python 3.9 slim as the base image
-FROM python:3.9-slim
+# Use the official Python 3.9 image (non-slim) as the base image
+FROM python:3.9
 
 # Install necessary system libraries including FontForge and its Python bindings
-RUN apt-get update -qq && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y \
     fontforge \
     python3-fontforge \
     libgl1 \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
-
-# Add the directory containing the FontForge Python module to PYTHONPATH
-ENV PYTHONPATH="/usr/lib/python3/dist-packages:${PYTHONPATH}"
 
 # Set the working directory inside the container
 WORKDIR /backend
