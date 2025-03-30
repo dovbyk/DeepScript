@@ -66,7 +66,7 @@ const Contributors: React.FC = () => {
 
   return (
     <div className="glass-panel p-8 animate-fade-in">
-       <h2 className="font-agency text-3xl md:text-5xl text-center mb-6">DESCRIPTION</h2>
+       <h2 className="font-agency text-3xl md:text-5xl text-center mb-6">CONTRIBUTORS</h2>
       
       <div className="flex justify-center mb-10">
         <Contributor 
