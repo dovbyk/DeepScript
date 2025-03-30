@@ -20,8 +20,8 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				agency: ['"Agency FB"', 'sans-serif'],
-				sans: ['Montserrat', 'sans-serif'],			},
+				agency: ['"Agency FB"', "sans-serif"],
+				sans: ["Montserrat", "sans-serif"],			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
