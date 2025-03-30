@@ -26,39 +26,39 @@ const Contributor: React.FC<ContributorProps> = ({ name, role, image, isLead = f
 
 const Contributors: React.FC = () => {
   const leadContributor = {
-    name: "Alex Johnson",
-    role: "Project Lead & Font Engine Architecture",
+    name: "Krutika Verma",
+    role: "Project Mentor",
     image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=300&h=300&fit=crop&crop=faces"
   };
 
   const contributors = [
     {
-      name: "Sarah Chen",
-      role: "Frontend Development",
+      name: "Aryan Sharma Gaire",
+      role: "*******",
       image: "/img3.jpg"
     },
     {
-      name: "Michael Peters",
-      role: "Backend Integration",
+      name: "Abhishek Kumar Yadav",
+      role: "Backend Integratio",
       image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=300&h=300&fit=crop&crop=faces"
     },
     {
-      name: "Priya Sharma",
+      name: "Bishal Thakur",
       role: "UI/UX Design",
       image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=300&h=300&fit=crop&crop=faces"
     },
     {
-      name: "David Rodriguez",
+      name: "Sujit Pangeni",
       role: "Font Processing Algorithms",
       image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=300&h=300&fit=crop&crop=faces"
     },
     {
-      name: "Emma Wilson",
+      name: "Pranjal Sharma",
       role: "Testing & Quality Assurance",
       image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=300&h=300&fit=crop&crop=faces"
     },
     {
-      name: "Jamal Thompson",
+      name: "Ankit Dahal",
       role: "Documentation & API Design",
       image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=300&h=300&fit=crop&crop=faces"
     }
