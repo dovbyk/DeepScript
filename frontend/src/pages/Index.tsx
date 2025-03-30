@@ -137,7 +137,7 @@ const Index = () => {
     <img 
       src="/logo.png" // Update this with your actual image filename
       alt="DeepScript Logo"
-      className="max-w-full h-auto max-h-24 md:max-h-32 lg:max-h-40" // Adjust sizing as needed
+      className="max-w-[min(100%,800px)] w-auto h-[clamp(80px,20vmin,200px)] md:h-[clamp(100px,25vmin,300px)]" // Adjust sizing as needed
     />
   </div>
           <p className="text-lg md:text-xl text-muted-foreground animate-fade-in">
