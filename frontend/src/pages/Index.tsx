@@ -279,7 +279,7 @@ const Index = () => {
         </div>
 
         <footer className="mt-20 text-center text-sm text-muted-foreground">
-          <p>© 2023 Fontify. All rights reserved.</p>
+          <p>© 2025 DeepScript. All rights reserved.</p>
         </footer>
       </div>
     </div>
