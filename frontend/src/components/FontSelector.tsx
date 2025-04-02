@@ -53,15 +53,7 @@ export const FontSelector: React.FC<FontSelectorProps> = ({
 
       {selectedFont && (
         <div className="mt-4 p-4 bg-black/40 border border-white/10 rounded-md animate-fade-in">
-          <h3 className="text-sm text-muted-foreground mb-2">Preview:</h3>
-          <div 
-            className="text-lg text-white"
-            style={{ 
-              fontFamily: availableFonts.find(f => f.path === selectedFont)?.name || 'Inter',
-            }}
-          >
-            
-          </div>
+      
         </div>
       )}
     </div>
