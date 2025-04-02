@@ -25,7 +25,6 @@ export const FontSelector: React.FC<FontSelectorProps> = ({
   ];
 
   // Preview text
-  const previewText = "The quick brown fox jumps over the lazy dog";
 
   const handleFontChange = (value: string) => {
     onSelect(value);
@@ -61,7 +60,7 @@ export const FontSelector: React.FC<FontSelectorProps> = ({
               fontFamily: availableFonts.find(f => f.path === selectedFont)?.name || 'Inter',
             }}
           >
-            {previewText}
+            
           </div>
         </div>
       )}
