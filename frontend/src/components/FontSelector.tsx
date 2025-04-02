@@ -21,10 +21,7 @@ export const FontSelector: React.FC<FontSelectorProps> = ({
 }) => {
   // Available fonts directly mapped from the public/fonts directory
   const availableFonts = [
-    { name: 'Handwriting_1', path: '/fonts/hand1.ttf' },
-    { name: 'Handwriting_2', path: '/fonts/hand2.ttf' },
-    { name: 'Montserrat', path: '/fonts/montserrat.ttf' },
-    { name: 'Playfair Display', path: '/fonts/playfair.ttf' }
+    { name: 'Handwriting_1', path: '/fonts/hand1.ttf' }
   ];
 
   // Preview text
