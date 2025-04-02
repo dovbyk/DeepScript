@@ -28,39 +28,39 @@ const Contributors: React.FC = () => {
   const leadContributor = {
     name: "Krutika Verma",
     role: "Project Mentor",
-    image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=300&h=300&fit=crop&crop=faces"
+    image: "___"
   };
 
   const contributors = [
     {
       name: "Aryan Sharma Gaire",
-      role: "*******",
+      role: "***",
       image: "/img3.jpg"
     },
     {
       name: "Abhishek Kumar Yadav",
-      role: "Backend Integratio",
-      image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=300&h=300&fit=crop&crop=faces"
+      role: "***",
+      image: "___"
     },
     {
       name: "Bishal Thakur",
-      role: "UI/UX Design",
-      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=300&h=300&fit=crop&crop=faces"
+      role: "***",
+      image: "___"
     },
     {
       name: "Sujit Pangeni",
-      role: "Font Processing Algorithms",
-      image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=300&h=300&fit=crop&crop=faces"
+      role: "***",
+      image: "___"
     },
     {
       name: "Pranjal Sharma",
-      role: "Testing & Quality Assurance",
-      image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=300&h=300&fit=crop&crop=faces"
+      role: "***",
+      image: "___"
     },
     {
       name: "Ankit Dahal",
-      role: "Documentation & API Design",
-      image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=300&h=300&fit=crop&crop=faces"
+      role: "***",
+      image: "___"
     }
   ];
 
