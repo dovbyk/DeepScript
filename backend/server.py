@@ -6,7 +6,7 @@ from text_rendering import render_text
 from font_generator import generate_font  # Import the generate_font function
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "https://deepscript.vercel.app"}})
 
 UPLOAD_FOLDER = "uploads"
 OUTPUT_FOLDER = "output"
