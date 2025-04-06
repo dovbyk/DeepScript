@@ -35,7 +35,7 @@ const Contributors: React.FC = () => {
     {
       name: "Aryan Sharma Gaire",
       role: "***",
-      image: "/img3.jpg"
+      image: "___"
     },
     {
       name: "Abhishek Kumar Yadav",
