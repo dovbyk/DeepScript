@@ -28,7 +28,7 @@ const Contributors: React.FC = () => {
   const leadContributor = {
     name: "Krutika Verma",
     role: "Project Mentor",
-    image: "https"
+    image: "black.jpg"
   };
 
   const contributors = [
