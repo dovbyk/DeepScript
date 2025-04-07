@@ -28,38 +28,38 @@ const Contributors: React.FC = () => {
   const leadContributor = {
     name: "Krutika Verma",
     role: "Project Mentor",
-    image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=300&h=300&fit=crop&crop=faces"
+    image: "https"
   };
 
   const contributors = [
     {
       name: "Aryan Sharma Gaire",
-      role: "***",
+      role: "Backend Engineering",
       image: "img3.jpg"
     },
     {
       name: "Abhishek Kumar Yadav",
-      role: "***",
+      role: "Endpoint Management",
       image: "ab.jpeg"
     },
     {
       name: "Bishal Thakur",
-      role: "***",
+      role: "Frontend Engineering",
       image: "b.jpeg"
     },
     {
       name: "Sujit Pangeni",
-      role: "***",
+      role: "Conference Paper Publishment",
       image: "pan.jpeg"
     },
     {
       name: "Pranjal Sharma",
-      role: "***",
+      role: "Conference Paper Publishment",
       image: "___"
     },
     {
       name: "Ankit Dahal",
-      role: "***",
+      role: "UI/UX design",
       image: "an.jpeg"
     }
   ];
