@@ -55,7 +55,7 @@ const Contributors: React.FC = () => {
     {
       name: "Pranjal Sharma",
       role: "Conference Paper Publishment",
-      image: "___"
+      image: "pr.jpeg"
     },
     {
       name: "Ankit Dahal",
