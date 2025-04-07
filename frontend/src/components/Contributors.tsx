@@ -35,22 +35,22 @@ const Contributors: React.FC = () => {
     {
       name: "Aryan Sharma Gaire",
       role: "***",
-      image: "___"
+      image: "img3.jpg"
     },
     {
       name: "Abhishek Kumar Yadav",
       role: "***",
-      image: "___"
+      image: "ab.jpeg"
     },
     {
       name: "Bishal Thakur",
       role: "***",
-      image: "___"
+      image: "b.jpeg"
     },
     {
       name: "Sujit Pangeni",
       role: "***",
-      image: "___"
+      image: "pan.jpeg"
     },
     {
       name: "Pranjal Sharma",
@@ -60,7 +60,7 @@ const Contributors: React.FC = () => {
     {
       name: "Ankit Dahal",
       role: "***",
-      image: "___"
+      image: "an.jpeg"
     }
   ];
 
