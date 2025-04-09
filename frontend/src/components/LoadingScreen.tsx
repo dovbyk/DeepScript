@@ -8,7 +8,7 @@ const LoadingScreen = ({ children }: { children: React.ReactNode }) => {
       // Add small delay for smooth fade
       setTimeout(() => {
         setIsLoading(false);
-      }, 10000); // You can adjust this if needed
+      }, 2000); // You can adjust this if needed
     };
 
     if (document.readyState === "complete") {
