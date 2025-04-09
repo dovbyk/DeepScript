@@ -6,10 +6,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import LoadingScreen from "./components/LoadingScreen"; // 👈 make sure this path is correct
+
 
 const queryClient = new QueryClient();
 
 const App = () => (
+  <LoadingScreen>
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -23,6 +26,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
+    </LoadingScreen>
 );
 
 export default App;
