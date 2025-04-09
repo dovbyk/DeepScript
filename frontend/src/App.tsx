@@ -16,7 +16,7 @@ const App = () => {
 
   useEffect(() => {
     // Simulate loading delay
-    const timeout = setTimeout(() => setLoading(false), 1000);
+    const timeout = setTimeout(() => setLoading(false), 3000);
     return () => clearTimeout(timeout);
   }, []);
 
