@@ -5,62 +5,48 @@ import { PdfPreview } from '../components/PdfPreview';
 import FontUploader from '../components/FontUploader';
 import { toast } from "sonner";
 import { renderText } from '../api/textRenderer';
-import  Contributors from '../components/Contributors';
-import  About from '../components/About';
+import Contributors from '../components/Contributors';
+import About from '../components/About';
 
 const Index = () => {
   const [canvasText, setCanvasText] = useState('Type something...');
   const [selectedFontPath, setSelectedFontPath] = useState<string | null>(null);
   const [customFont, setCustomFont] = useState<File | null>(null);
-  const [selectedFont, setSelectedFont] = useState<File | null>(null); // holds the final chosen font
+  const [selectedFont, setSelectedFont] = useState<File | null>(null);
   const [generatedPdf, setGeneratedPdf] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeStep, setActiveStep] = useState(1);
   const [fontSelectionMethod, setFontSelectionMethod] = useState<'select' | 'upload'>('select');
 
-  // When generating PDF, use selectedFont if available. 
-  // If not, and if a font is selected via dropdown, fetch it.
   const generatePdf = async () => {
     if (!canvasText || (!selectedFont && !selectedFontPath)) {
       toast.error("Please provide text and select a font");
       return;
     }
+
     setIsGenerating(true);
-    
+
     try {
       let fontFile: File;
       if (customFont) {
-        // Use uploaded custom font
         fontFile = customFont;
-        console.log("Using custom font file:", customFont.name);
       } else if (selectedFont) {
-        // Already have selected font (e.g. generated font)
         fontFile = selectedFont;
-        console.log("Using selected font file from generated/uploaded:", fontFile.name);
       } else if (selectedFontPath) {
-        // Fetch the font file from the provided URL
         const response = await fetch(selectedFontPath);
-        if (!response.ok) {
-          throw new Error("Failed to fetch the selected font file");
-        }
+        if (!response.ok) throw new Error("Failed to fetch the selected font file");
+
         const blob = await response.blob();
         const fontName = selectedFontPath.split('/').pop() || 'font.ttf';
         fontFile = new File([blob], fontName, { type: 'font/ttf' });
-        console.log("Fetched selected font file:", fontName);
-        // Optionally, update state so subsequent PDF generation uses this file
         setSelectedFont(fontFile);
       } else {
         toast.error("No font file available");
         setIsGenerating(false);
         return;
       }
-      
-      // Call the renderText function from our API with the actual font file
-      const pdfData = await renderText({
-        text: canvasText,
-        fontFile: fontFile
-      });
-      
+
+      const pdfData = await renderText({ text: canvasText, fontFile });
       setGeneratedPdf(pdfData);
       toast.success("PDF generated successfully!");
       setActiveStep(3);
@@ -75,26 +61,20 @@ const Index = () => {
   const handleFontSelect = (fontPath: string) => {
     setSelectedFontPath(fontPath);
     setCustomFont(null);
-    // Reset any previously generated font
     setSelectedFont(null);
     const fontName = fontPath.split('/').pop() || 'Selected Font';
     toast.info(`Selected font: ${fontName}`);
-    // Optionally, you can fetch the font here and update selectedFont if desired.
   };
 
   const handleCustomFontUpload = (file: File) => {
     setCustomFont(file);
     setSelectedFontPath(null);
-    // When a custom font is uploaded, set it as the selected font
     setSelectedFont(file);
     toast.info(`Uploaded custom font: ${file.name}`);
   };
 
-  // Callback for when FontUploader generates a new font.
   const handleGeneratedFont = (fontFile: File) => {
-    // When a generated font is produced, store it as the selected font.
     setSelectedFont(fontFile);
-    // Also, reset any other font selections
     setCustomFont(null);
     setSelectedFontPath(null);
     toast.info(`Generated font selected: ${fontFile.name}`);
@@ -105,11 +85,17 @@ const Index = () => {
   };
 
   const handleNext = () => {
-    if (activeStep === 1 && canvasText.trim()) {
-      setActiveStep(2);
-    } else if (activeStep === 2) {
-      generatePdf();
+    if (!canvasText.trim()) {
+      toast.error("Please enter some text.");
+      return;
     }
+
+    if (!selectedFont && !selectedFontPath) {
+      toast.error("Please select or upload a font.");
+      return;
+    }
+
+    generatePdf();
   };
 
   const handleBack = () => {
@@ -120,11 +106,9 @@ const Index = () => {
     setFontSelectionMethod(method);
     if (method === 'select') {
       setCustomFont(null);
-      // When switching back to select, clear any generated font
       setSelectedFont(null);
     } else {
       setSelectedFontPath(null);
-      // When using upload, clear any previously selected font from FontSelector
       setSelectedFont(null);
     }
   };
@@ -134,14 +118,15 @@ const Index = () => {
       <div className="max-w-6xl mx-auto">
         <header className="mb-16 text-center animate-slide-down">
           <div className="flex justify-center mb-6">
-    <img 
-      src="/logo.png" // Update this with your actual image filename
-      alt="DeepScript Logo"
-      className="max-w-[min(100%,800px)] w-auto h-[clamp(80px,20vmin,200px)] md:h-[clamp(100px,25vmin,300px)]" // Adjust sizing as needed
-    />
-  </div>
-       <h2 className="font-agency font-bold text-3xl md:text-5xl text-center mb-6">TRANSFORM ANY TEXT INTO A REALISTIC HANDWRITING</h2>
-
+            <img 
+              src="/logo.png"
+              alt="DeepScript Logo"
+              className="max-w-[min(100%,800px)] w-auto h-[clamp(80px,20vmin,200px)] md:h-[clamp(100px,25vmin,300px)]"
+            />
+          </div>
+          <h2 className="font-agency font-bold text-3xl md:text-5xl text-center mb-6">
+            TRANSFORM ANY TEXT INTO A REALISTIC HANDWRITING
+          </h2>
         </header>
 
         <div className="grid grid-cols-1 gap-12">
@@ -153,16 +138,14 @@ const Index = () => {
               </div>
               <h2 className="font-agency text-2xl">ENTER YOUR TEXT</h2>
             </div>
-            <div className={`transition-opacity duration-500 ${activeStep === 1 ? 'opacity-100' : 'opacity-50'}`}>
-              <Canvas 
-                text={canvasText}
-                onTextChange={handleCanvasTextChange}
-                readOnly={activeStep !== 1}
-              />
-            </div>
+            <Canvas 
+              text={canvasText}
+              onTextChange={handleCanvasTextChange}
+              readOnly={false}
+            />
           </div>
 
-          {/* Step 2: Select/Upload/Generate Font */}
+          {/* Step 2: Font Selection (Always visible now) */}
           <div className="glass-panel p-6 animate-zoom-in delay-100">
             <div className="flex items-center mb-6">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${activeStep >= 2 ? 'bg-accent text-black' : 'bg-secondary text-white'}`}>
@@ -170,40 +153,39 @@ const Index = () => {
               </div>
               <h2 className="font-agency text-2xl">SELECT FONT</h2>
             </div>
-            <div className={`transition-opacity duration-500 ${activeStep === 2 ? 'opacity-100' : 'opacity-50'}`}>
+            <div className="grid grid-cols-1 gap-6">
               <div className="flex gap-4 mb-6">
                 <button 
                   className={`flex-1 py-2 px-4 rounded-md transition-colors ${fontSelectionMethod === 'select' ? 'bg-accent text-black' : 'bg-secondary/50 hover:bg-secondary/70'}`}
                   onClick={() => toggleFontSelectionMethod('select')}
-                  disabled={activeStep !== 2}
+                  disabled={!canvasText.trim()}
                 >
                   Select Font
                 </button>
                 <button 
                   className={`flex-1 py-2 px-4 rounded-md transition-colors ${fontSelectionMethod === 'upload' ? 'bg-accent text-black' : 'bg-secondary/50 hover:bg-secondary/70'}`}
                   onClick={() => toggleFontSelectionMethod('upload')}
-                  disabled={activeStep !== 2}
+                  disabled={!canvasText.trim()}
                 >
                   Upload/Generate Font
                 </button>
               </div>
-              <div className="grid grid-cols-1 gap-6">
-                {fontSelectionMethod === 'select' && (
-                  <FontSelector 
-                    selectedFont={selectedFontPath}
-                    onSelect={handleFontSelect}
-                    disabled={activeStep !== 2}
-                  />
-                )}
-                {fontSelectionMethod === 'upload' && (
-                  <FontUploader 
-                    onUpload={handleCustomFontUpload}
-                    onGeneratedFont={handleGeneratedFont}
-                    customFont={customFont}
-                    disabled={activeStep !== 2}
-                  />
-                )}
-              </div>
+
+              {fontSelectionMethod === 'select' && (
+                <FontSelector 
+                  selectedFont={selectedFontPath}
+                  onSelect={handleFontSelect}
+                  disabled={!canvasText.trim()}
+                />
+              )}
+              {fontSelectionMethod === 'upload' && (
+                <FontUploader 
+                  onUpload={handleCustomFontUpload}
+                  onGeneratedFont={handleGeneratedFont}
+                  customFont={customFont}
+                  disabled={!canvasText.trim()}
+                />
+              )}
             </div>
           </div>
 
@@ -231,10 +213,7 @@ const Index = () => {
           {/* Navigation Buttons */}
           <div className="flex justify-between mt-4">
             {activeStep > 1 && (
-              <button 
-                className="glass-button flex items-center"
-                onClick={handleBack}
-              >
+              <button className="glass-button flex items-center" onClick={handleBack}>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
@@ -267,12 +246,10 @@ const Index = () => {
             )}
           </div>
         </div>
-            
 
         <div className="mt-60">
           <About />
-        </div>   
-
+        </div>
 
         <div className="mt-60">
           <Contributors />
