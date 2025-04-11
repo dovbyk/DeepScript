@@ -167,7 +167,7 @@ const Index = () => {
                   onClick={() => toggleFontSelectionMethod('upload')}
                   disabled={!canvasText.trim()}
                 >
-                  Upload/Generate Font
+                  Upload Your Writing Sample
                 </button>
               </div>
 
