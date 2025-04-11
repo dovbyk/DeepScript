@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { 
   Select, 
@@ -27,8 +26,12 @@ export const FontSelector: React.FC<FontSelectorProps> = ({
     { name: 'Playfair', path: '/fonts/playfair.ttf' }
   ];
 
+  // CHANGE: Modified to activate font selection immediately
   const handleFontChange = (value: string) => {
     onSelect(value);
+    // ADDED: Automatically move to next step when font is selected
+    const event = new CustomEvent('font-selected');
+    window.dispatchEvent(event);
   };
 
   // Load fonts for preview when component mounts
@@ -67,7 +70,7 @@ export const FontSelector: React.FC<FontSelectorProps> = ({
       
       <Select 
         value={selectedFont || undefined} 
-        onValueChange={handleFontChange}
+        onValueChange={handleFontChange} // CHANGED: Use handleFontChange directly
         disabled={disabled}
       >
         <SelectTrigger className="w-full bg-secondary/50 border-white/10">

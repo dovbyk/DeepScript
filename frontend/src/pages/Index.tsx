@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Canvas } from '../components/Canvas';
 import { FontSelector } from '../components/FontSelector';
 import { PdfPreview } from '../components/PdfPreview';
@@ -17,6 +17,23 @@ const Index = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeStep, setActiveStep] = useState(1);
   const [fontSelectionMethod, setFontSelectionMethod] = useState<'select' | 'upload'>('select');
+
+  // ADDED: Event listener to automatically move to next step when font is selected
+  useEffect(() => {
+    const handleFontSelected = () => {
+      // Automatically move to the next step when a font is selected
+      if (activeStep === 2) {
+        setActiveStep(3);
+      }
+    };
+
+    window.addEventListener('font-selected', handleFontSelected);
+
+    // Cleanup the event listener
+    return () => {
+      window.removeEventListener('font-selected', handleFontSelected);
+    };
+  }, [activeStep]);
 
   // When generating PDF, use selectedFont if available. 
   // If not, and if a font is selected via dropdown, fetch it.
