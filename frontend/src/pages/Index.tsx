@@ -9,7 +9,7 @@ import Contributors from '../components/Contributors';
 import About from '../components/About';
 
 const Index = () => {
-  const [canvasText, setCanvasText] = useState('');
+  const [canvasText, setCanvasText] = useState('Type Something...');
   const [selectedFontPath, setSelectedFontPath] = useState<string | null>(null);
   const [customFont, setCustomFont] = useState<File | null>(null);
   const [selectedFont, setSelectedFont] = useState<File | null>(null);
