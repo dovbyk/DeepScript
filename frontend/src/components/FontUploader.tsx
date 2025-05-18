@@ -188,7 +188,7 @@ const FontUploader: React.FC<FontUploaderProps> = ({
           {processedImages.map((img, idx) => (
             <div key={idx} className="flex flex-col items-center">
               <img 
-                src={`https://deepscript-o12c.onrender.com/get-image?path=${encodeURIComponent(img.path)}`} 
+                src={`https://betadeep.onrender.com/get-image?path=${encodeURIComponent(img.path)}`} 
                 alt={`Processed image ${idx}`} 
                 className="h-40"
               />
