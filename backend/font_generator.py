@@ -102,12 +102,35 @@ def generate_font(png_file_items):
         os2.sxHeight = 500
         os2.fsSelection = 0b00000000_00000000
         
-        # Name table
-        name.names = [
-            NameRecord(3, 1, 0x409, 1, "CustomFont"),        # Family Name
-            NameRecord(3, 1, 0x409, 4, "CustomFont Regular"), # Full Name
-            NameRecord(3, 1, 0x409, 6, "CustomFont-Regular")  # PostScript Name
-        ]
+        # Name table - CORRECTED SECTION
+        name.names = []
+        
+        # Family Name
+        nr1 = NameRecord()
+        nr1.platformID = 3
+        nr1.platEncID = 1
+        nr1.langID = 0x409
+        nr1.nameID = 1
+        nr1.string = "CustomFont"
+        name.names.append(nr1)
+        
+        # Full Name
+        nr2 = NameRecord()
+        nr2.platformID = 3
+        nr2.platEncID = 1
+        nr2.langID = 0x409
+        nr2.nameID = 4
+        nr2.string = "CustomFont Regular"
+        name.names.append(nr2)
+        
+        # PostScript Name
+        nr3 = NameRecord()
+        nr3.platformID = 3
+        nr3.platEncID = 1
+        nr3.langID = 0x409
+        nr3.nameID = 6
+        nr3.string = "CustomFont-Regular"
+        name.names.append(nr3)
 
         # Character mapping
         cmap.tableVersion = 0
