@@ -56,15 +56,9 @@ def process_png_files(png_file_items):
         convert_bmp_to_svg(bmp_path, svg_path)
 
 def generate_font(png_file_items):
-    """
-    Receives a list of dictionaries with keys "original_path" and "new_name".
-    Converts the PNG files (using the new names) to SVG files and then uses them to
-    generate a TTF font. Returns a Flask response sending the TTF file.
-    """
-    # Convert PNGs to SVGs
     process_png_files(png_file_items)
 
-    # Build glyph_map from the provided items.
+    # Build glyph_map (same as before)
     glyph_map = {}
     for item in png_file_items:
         new_name = item.get("new_name")
@@ -73,79 +67,76 @@ def generate_font(png_file_items):
             if len(base_name) == 1:
                 glyph_map[base_name] = f"{base_name}.svg"
             else:
-                print(f"Warning: new_name '{new_name}' (base '{base_name}') is not a single character. Skipping this item.")
+                print(f"Warning: Skipping invalid character {new_name}")
         else:
-            print(f"Warning: new_name '{new_name}' is not valid. Skipping this item.")
+            print(f"Warning: Invalid new_name {new_name}")
 
-    # Define character sets
-    uppercase_chars = set('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-    ascender_chars = set('bdfhklt')
-    descender_chars = set('gpqy')
+    # Create font using fontTools
+    font = TTFont()
+    font.setGlyphOrder([])  # Start with empty glyph set
+    glyf_table = font["glyf"] = font.get("glyf") or font["glyf"] = _g_l_y_f = newTable("glyf")
+    hmtx_table = font["hmtx"] = font.get("hmtx") or font["hmtx"] = newTable("hmtx")
+    cmap_table = font["cmap"] = font.get("cmap") or font["cmap"] = newTable("cmap")
 
-    def get_scale_factors(char, glyph_height, glyph_width):
-        if char in uppercase_chars or char in ascender_chars:
-            height_target = 700
-            width_target = 600
-        elif char in descender_chars:
-            height_target = 500
-            width_target = 500
-        else:
-            height_target = 500
-            width_target = 500
-        height_scale = height_target / glyph_height if glyph_height > 0 else 1
-        width_scale = width_target / glyph_width if glyph_width > 0 else 1
-        return min(height_scale, width_scale)
+    # Font metrics (same as before)
+    units_per_em = 1000
+    ascent = 800
+    descent = 200
+    font["head"].unitsPerEm = units_per_em
+    font["hhea"].ascent = ascent
+    font["hhea"].descent = -descent
+    font["OS/2"].sTypoAscender = ascent
+    font["OS/2"].sTypoDescender = -descent
+    font["OS/2"].usWinAscent = ascent
+    font["OS/2"].usWinDescent = descent
 
-    def position_glyph(glyph, char):
-        bbox = glyph.boundingBox()
-        if char in descender_chars:
-            main_body_height = (bbox[3] - bbox[1]) * 2/3
-            baseline_shift = 200 - main_body_height
-        else:
-            baseline_shift = 0
-        glyph.transform(psMat.translate(0, baseline_shift))
-
-    # Create a new font
-    font = fontforge.font()
-    font.familyname = "CustomFont"
-    font.fullname = "CustomFont Regular"
-    font.fontname = "CustomFont-Regular"
-    font.em = 1000
-    font.ascent = 800
-    font.descent = 200
-
-    # Create glyphs using the glyph_map.
+    # Process each glyph
     for char, svg_filename in glyph_map.items():
         svg_path = os.path.join(SVG_TEMP_DIR, svg_filename)
         if not os.path.exists(svg_path):
-            print(f"SVG file not found: {svg_path}. Skipping {char}.")
+            print(f"Skipping missing SVG: {svg_path}")
             continue
 
-        glyph = font.createChar(ord(char), char)
-        glyph.importOutlines(svg_path)
+        # Parse SVG path
+        with open(svg_path) as f:
+            svg_data = f.read()
+        path = parse_path(SVGPath.fromstring(svg_data).d)
 
-        bbox = glyph.boundingBox()
-        glyph_width = bbox[2] - bbox[0]
+        # Create glyph
+        glyph_name = f"uni{ord(char):04X}"
+        pen = TTGlyphPen(font.getGlyphSet())
+        for segment in path:
+            if isinstance(segment, Line):
+                pen.lineTo((segment.end.real, segment.end.imag))
+            elif isinstance(segment, CubicBezier):
+                pen.curveTo(
+                    (segment.control1.real, segment.control1.imag),
+                    (segment.control2.real, segment.control2.imag),
+                    (segment.end.real, segment.end.imag)
+                )
+
+        # Apply scaling/positioning (same logic as before)
+        bbox = pen.glyph.bbox
         glyph_height = bbox[3] - bbox[1]
+        glyph_width = bbox[2] - bbox[0]
+        
         scale_factor = get_scale_factors(char, glyph_height, glyph_width)
         if char in descender_chars:
             scale_factor *= 1.5
-        glyph.transform(psMat.scale(scale_factor))
-        position_glyph(glyph, char)
-        new_bbox = glyph.boundingBox()
-        new_width = new_bbox[2] - new_bbox[0]
-        glyph.width = int(new_width + 100)
 
-    # Set font-wide metrics.
-    font.hhea_ascent = font.ascent
-    font.hhea_descent = -font.descent
-    font.os2_typoascent = font.ascent
-    font.os2_typodescent = -font.descent
-    font.os2_winascent = font.ascent
-    font.os2_windescent = font.descent
-    font.os2_xheight = 500
+        # Transform glyph
+        for contour in pen.glyph:
+            for point in contour.points:
+                point.x *= scale_factor
+                point.y *= scale_factor
+                if char in descender_chars:
+                    point.y += (200 - (glyph_height * scale_factor * 2/3))
 
-    font.generate(OUTPUT_FONT_PATH)
-    print(f"Font saved as {OUTPUT_FONT_PATH}")
+        # Add to font
+        glyf_table[glyph_name] = pen.glyph
+        hmtx_table[glyph_name] = (int(glyph_width * scale_factor + 100), 0)
+        cmap_table.cmap[4, 3][ord(char)] = glyph_name
 
+    # Save and return
+    font.save(OUTPUT_FONT_PATH)
     return send_file(OUTPUT_FONT_PATH, as_attachment=True, mimetype="font/ttf")
