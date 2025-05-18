@@ -1,5 +1,4 @@
-FROM ubuntu:20.04
-
+FROM python:3.9-slim
 # Set noninteractive mode to avoid tzdata prompt
 ENV DEBIAN_FRONTEND=noninteractive
 
