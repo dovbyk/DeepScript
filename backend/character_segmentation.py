@@ -1,7 +1,6 @@
 import cv2
 import os
 import numpy as np
-import pathlib
 import google.generativeai as genai
 
 genai.configure(api_key="AIzaSyCsFPJPRlBKFF3p7ARWo89zNPXUtsYyz40")
