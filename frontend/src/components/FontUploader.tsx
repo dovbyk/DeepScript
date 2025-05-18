@@ -36,7 +36,7 @@ const FontUploader: React.FC<FontUploaderProps> = ({
     formData.append('image', file);
 
     try {
-      const response = await fetch('https://deepscript-o12c.onrender.com/process-image', {
+      const response = await fetch('https://betadeep.onrender.com/process-image', {
         method: 'POST',
         body: formData,
       });
@@ -122,7 +122,7 @@ const FontUploader: React.FC<FontUploaderProps> = ({
     }));
 
     try {
-      const response = await fetch("https://deepscript-o12c.onrender.com/generate-font", {
+      const response = await fetch("https://betadeep.onrender.com/generate-font", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ png_files: pngFileMappings }),
