@@ -1,0 +1,96 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Agency+FB:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 3%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 3%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 5%;
+
+    --secondary: 0 0% 8%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 14%;
+    --muted-foreground: 0 0% 76%;
+
+    --accent: 180 100% 50%;
+    --accent-foreground: 0 0% 9%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 14%;
+    --input: 0 0% 14%;
+    --ring: 0 0% 76%;
+
+    --radius: 0.75rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground min-h-screen;
+    font-feature-settings: "ss01", "ss02", "cv01", "cv02";
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-agency font-bold tracking-tight;
+  }
+
+  @font-face {
+    font-family: 'Agency FB';
+    src: url('/fonts/Agency FB-Bold.woff2') format('woff2');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-card/40 backdrop-blur-lg border border-white/10 rounded-xl;
+  }
+  
+  .glass-button {
+    @apply bg-secondary/50 hover:bg-secondary/70 backdrop-blur-md border border-white/10 
+           transition-all duration-300 rounded-lg px-4 py-2;
+  }
+  
+  .text-glow {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  }
+  
+  .canvas-container {
+    @apply relative p-8 rounded-xl bg-black border border-white/10 shadow-xl;
+  }
+  
+  .input-label {
+    @apply text-sm font-medium text-muted-foreground mb-2 block;
+  }
+  
+  .floating-element {
+    @apply transition-all duration-500 hover:translate-y-[-5px];
+  }
+}
+
+.watermark-background {
+  background-image: radial-gradient(circle at 25px 25px, rgba(255, 255, 255, 0.1) 2%, transparent 0%),
+                    radial-gradient(circle at 75px 75px, rgba(255, 255, 255, 0.05) 2%, transparent 0%);
+  background-size: 100px 100px;
+}
