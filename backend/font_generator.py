@@ -1,7 +1,7 @@
 import os
 import subprocess
 from PIL import Image, ImageStat, ImageOps
-import fontforge
+from fontTools.ttLib import newTable 
 import psMat
 from flask import send_file
 
@@ -73,12 +73,14 @@ def generate_font(png_file_items):
 
     # Create font using fontTools
     font = TTFont()
-    font.setGlyphOrder([])  # Start with empty glyph set
-    glyf_table = font["glyf"] = font.get("glyf") or font["glyf"] = _g_l_y_f = newTable("glyf")
-    hmtx_table = font["hmtx"] = font.get("hmtx") or font["hmtx"] = newTable("hmtx")
-    cmap_table = font["cmap"] = font.get("cmap") or font["cmap"] = newTable("cmap")
-
-    # Font metrics (same as before)
+    if "glyf" not in font:
+        font["glyf"] = newTable("glyf")
+    glyf_table = font["glyf"]
+    
+    
+    hmtx_table = font["hmtx"] = font.get("hmtx") or newTable("hmtx")
+    cmap_table = font["cmap"] = font.get("cmap") or newTable("cmap")
+    
     units_per_em = 1000
     ascent = 800
     descent = 200
