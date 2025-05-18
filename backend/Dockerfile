@@ -1,12 +1,13 @@
 FROM ubuntu:20.04
 
+# Set noninteractive mode to avoid tzdata prompt
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install system dependencies and Python 3.10
 RUN apt-get update && apt-get install -y \
-    software-properties-common && \
-    add-apt-repository ppa:deadsnakes/ppa -y && \
-    apt-get update && apt-get install -y \
+    software-properties-common \
+    && add-apt-repository ppa:deadsnakes/ppa -y \
+    && apt-get update && apt-get install -y \
     python3.10 \
     python3.10-distutils \
     python3-pip \
@@ -19,18 +20,23 @@ RUN apt-get update && apt-get install -y \
     potrace \
     && rm -rf /var/lib/apt/lists/*
 
-# Symlink python3.10 to python3 and python
+# Symlink python3 and pip to Python 3.10
 RUN ln -sf /usr/bin/python3.10 /usr/bin/python3 && \
     ln -sf /usr/bin/python3.10 /usr/bin/python && \
     curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10
 
+# Set working directory
 WORKDIR /backend
 
+# Install Python dependencies
 COPY requirements.txt .
 RUN pip3 install --upgrade pip setuptools && pip3 install --no-cache-dir -r requirements.txt
 
+# Copy code
 COPY . .
 
+# Expose port
 EXPOSE 5000
 
+# Run the app
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "server:app", "--timeout", "300"]
