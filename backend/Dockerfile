@@ -25,7 +25,6 @@ RUN apt-get update && apt-get install -y \
     libuninameslist-dev \
     libxml2-dev \
     libreadline-dev \
-    python3.9-dev \
     zlib1g-dev \
     libgl1-mesa-glx \
     libglib2.0-0 \
