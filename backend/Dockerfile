@@ -33,15 +33,15 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Download LATEST FontForge release tarball (correct URL)
-RUN wget https://github.com/fontforge/fontforge/releases/download/20230101/FontForge-2023-01-01.tar.xz \
-    && tar -xJf FontForge-2023-01-01.tar.xz \
-    && cd FontForge-2023-01-01 \
+RUN wget https://github.com/fontforge/fontforge/releases/download/20230101/fontforge-20230101.tar.xz \
+    && tar -xJf fontforge-20230101.tar.xz \
+    && cd fontforge-20230101 \
     && ./configure --enable-pyextension --with-python=python3.9 \
     && make -j$(nproc) \
     && make install \
     && ldconfig \
     && cd .. \
-    && rm -rf FontForge-2023-01-01 FontForge-2023-01-01.tar.xz
+    && rm -rf fontforge-20230101 fontforge-20230101.tar.xz
 
 
 # Install Python dependencies
