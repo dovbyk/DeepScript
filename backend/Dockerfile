@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     autoconf \
     automake \
     libtool \
+    pkg-config \
     libjpeg-dev \
     libtiff5-dev \
     libpng-dev \
@@ -23,14 +24,20 @@ RUN apt-get update && apt-get install -y \
     libcairo2-dev \
     libspiro-dev \
     libuninameslist-dev \
+    libxml2-dev \
+    libreadline-dev \
+    python3.9-dev \  # Required for Python 3.9 bindings
+    zlib1g-dev \
     libgl1-mesa-glx \
     libglib2.0-0 \
     potrace \
     && rm -rf /var/lib/apt/lists/*
 
+
 # Clone and build FontForge for Python 3.9
 RUN git clone https://github.com/fontforge/fontforge.git \
     && cd fontforge \
+    && chmod +x bootstrap \  # Grant execute permission
     && ./bootstrap \
     && ./configure --enable-pyextension --with-python=python3.9 \
     && make -j$(nproc) \
