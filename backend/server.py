@@ -55,6 +55,7 @@ def generate_font_endpoint():
     png_files = data.get("png_files")
     if not png_files or not isinstance(png_files, list):
         return jsonify({"error": "No png_files provided"}), 400
+    print(png_files)
     return generate_font(png_files)
 
 
