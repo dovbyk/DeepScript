@@ -54,31 +54,43 @@ def convert_bmp_to_svg(bmp_path, svg_path):
 
 def process_png_files(png_file_items):
     for item in png_file_items:
-        if not item.get("original_path") or not os.path.exists(item["original_path"]):
+        original_path = item.get("original_path")
+        if not original_path or not os.path.exists(original_path):
             continue
             
-        base_name = os.path.splitext(item.get("new_name", ""))[0] or \
-                   os.path.splitext(os.path.basename(item["original_path"]))[0]
+        # Extract base name from original filename
+        filename = os.path.basename(original_path)
+        base_name = os.path.splitext(filename)[0]
+        
+        # Skip files with invalid names
+        if len(base_name) != 1:
+            continue
         
         bmp_path = os.path.join(BMP_TEMP_DIR, f"{base_name}.bmp")
         svg_path = os.path.join(SVG_TEMP_DIR, f"{base_name}.svg")
         
-        if convert_png_to_bmp(item["original_path"], bmp_path):
+        if convert_png_to_bmp(original_path, bmp_path):
             convert_bmp_to_svg(bmp_path, svg_path)
 
 def generate_font(png_file_items):
     try:
         process_png_files(png_file_items)
 
-        # Validate and build glyph map
+        # Build glyph map from valid filenames
         glyph_map = {}
         for item in png_file_items:
-            new_name = item.get("new_name", "")
-            if len(new_name) == 1:
-                glyph_map[new_name] = f"{new_name}.svg"
+            original_path = item.get("original_path")
+            if not original_path:
+                continue
+            
+            filename = os.path.basename(original_path)
+            base_name = os.path.splitext(filename)[0]
+            
+            if len(base_name) == 1:
+                glyph_map[base_name] = f"{base_name}.svg"
 
         if not glyph_map:
-            return jsonify({"error": "No valid glyphs provided"}), 400
+            return jsonify({"error": "No valid glyphs provided (filenames must be single characters like A.png)"}), 400
 
         # Font initialization
         font = TTFont()
