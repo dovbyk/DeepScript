@@ -1,0 +1,4 @@
+fontforge
+python3-fontforge
+libgl1
+libglib2.0-0
