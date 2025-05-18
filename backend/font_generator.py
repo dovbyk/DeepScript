@@ -1,143 +1,151 @@
 import os
 import subprocess
+import traceback
 from PIL import Image, ImageStat, ImageOps
-from fontTools.ttLib import newTable 
-from flask import send_file
+from flask import send_file, jsonify
+from fontTools.ttLib import TTFont, newTable
+from fontTools.pens.ttGlyphPen import TTGlyphPen
+from fontTools.svgLib import SVGPath
+from svgpathtools import parse_path, Line, CubicBezier
 
-# Temporary directories and output font path
+# Constants
 BMP_TEMP_DIR = "bmp_output_temp"
 SVG_TEMP_DIR = "svg_output_temp"
-OUTPUT_FONT_PATH = os.path.join("output", "CustomFont3.ttf")
+OUTPUT_FONT_PATH = os.path.join("output", "CustomFont.ttf")
+uppercase_chars = set('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+ascender_chars = set('bdfhklt')
+descender_chars = set('gpqy')
 
+# Create directories
 os.makedirs(BMP_TEMP_DIR, exist_ok=True)
 os.makedirs(SVG_TEMP_DIR, exist_ok=True)
 os.makedirs("output", exist_ok=True)
 
+def get_scale_factors(char, glyph_height, glyph_width):
+    if char in uppercase_chars or char in ascender_chars:
+        height_target = 700
+        width_target = 600
+    elif char in descender_chars:
+        height_target = 500
+        width_target = 500
+    else:
+        height_target = 500
+        width_target = 500
+    return min(
+        height_target / glyph_height if glyph_height > 0 else 1,
+        width_target / glyph_width if glyph_width > 0 else 1
+    )
+
 def convert_png_to_bmp(input_path, output_path):
-    """
-    Convert PNG to BMP (grayscale and binarized).
-    If the image is dark (likely a black background), invert it.
-    """
     img = Image.open(input_path).convert("L")
     stat = ImageStat.Stat(img)
-    avg_brightness = stat.mean[0]
-    if avg_brightness < 128:
+    if stat.mean[0] < 128:
         img = ImageOps.invert(img)
-    img = img.point(lambda p: 255 if p > 128 else 0)
-    img.save(output_path, format="BMP")
-    print(f"Converted to BMP: {output_path}")
+    img.point(lambda p: 255 if p > 128 else 0).save(output_path, "BMP")
 
 def convert_bmp_to_svg(bmp_path, svg_path):
-    """Convert BMP to SVG using Potrace."""
-    command = ["potrace", bmp_path, "-s", "-o", svg_path]
-    subprocess.run(command, check=True)
-    print(f"Converted to SVG: {svg_path}")
+    subprocess.run(["potrace", bmp_path, "-s", "-o", svg_path], check=True)
 
 def process_png_files(png_file_items):
-    """
-    Expects a list of dictionaries with keys "original_path" and "new_name".
-    For each item, convert the PNG to BMP and then to SVG.
-    The SVG is saved using the base name (extension removed) of the provided new_name.
-    """
     for item in png_file_items:
         original_path = item.get("original_path")
-        new_name = item.get("new_name")
+        new_name = item.get("new_name", "")
         if not original_path or not os.path.exists(original_path):
-            print(f"PNG file does not exist: {original_path}")
             continue
-        if new_name and isinstance(new_name, str):
-            base_name, _ = os.path.splitext(new_name)
-        else:
-            base_name, _ = os.path.splitext(os.path.basename(original_path))
-        bmp_path = os.path.join(BMP_TEMP_DIR, base_name + ".bmp")
-        svg_path = os.path.join(SVG_TEMP_DIR, base_name + ".svg")
+            
+        base_name = os.path.splitext(new_name)[0] if new_name else \
+                   os.path.splitext(os.path.basename(original_path))[0]
+        
+        bmp_path = os.path.join(BMP_TEMP_DIR, f"{base_name}.bmp")
+        svg_path = os.path.join(SVG_TEMP_DIR, f"{base_name}.svg")
+        
         convert_png_to_bmp(original_path, bmp_path)
         convert_bmp_to_svg(bmp_path, svg_path)
 
 def generate_font(png_file_items):
-    process_png_files(png_file_items)
+    try:
+        process_png_files(png_file_items)
 
-    # Build glyph_map (same as before)
-    glyph_map = {}
-    for item in png_file_items:
-        new_name = item.get("new_name")
-        if new_name and isinstance(new_name, str):
-            base_name, _ = os.path.splitext(new_name)
-            if len(base_name) == 1:
-                glyph_map[base_name] = f"{base_name}.svg"
-            else:
-                print(f"Warning: Skipping invalid character {new_name}")
-        else:
-            print(f"Warning: Invalid new_name {new_name}")
+        glyph_map = {}
+        for item in png_file_items:
+            new_name = item.get("new_name", "")
+            if len(new_name) == 1:
+                glyph_map[new_name] = f"{new_name}.svg"
 
-    # Create font using fontTools
-    font = TTFont()
-    if "glyf" not in font:
+        font = TTFont()
+        font["head"] = newTable("head")
         font["glyf"] = newTable("glyf")
-    glyf_table = font["glyf"]
-    
-    
-    hmtx_table = font["hmtx"] = font.get("hmtx") or newTable("hmtx")
-    cmap_table = font["cmap"] = font.get("cmap") or newTable("cmap")
-    
-    units_per_em = 1000
-    ascent = 800
-    descent = 200
-    font["head"].unitsPerEm = units_per_em
-    font["hhea"].ascent = ascent
-    font["hhea"].descent = -descent
-    font["OS/2"].sTypoAscender = ascent
-    font["OS/2"].sTypoDescender = -descent
-    font["OS/2"].usWinAscent = ascent
-    font["OS/2"].usWinDescent = descent
+        font["hmtx"] = newTable("hmtx")
+        font["cmap"] = cmap = newTable("cmap")
 
-    # Process each glyph
-    for char, svg_filename in glyph_map.items():
-        svg_path = os.path.join(SVG_TEMP_DIR, svg_filename)
-        if not os.path.exists(svg_path):
-            print(f"Skipping missing SVG: {svg_path}")
-            continue
+        # Font metrics
+        units_per_em = 1000
+        font["head"].unitsPerEm = units_per_em
+        font["hhea"] = newTable("hhea")
+        font["hhea"].ascent = 800
+        font["hhea"].descent = -200
+        font["OS/2"] = newTable("OS/2")
+        font["OS/2"].version = 4
+        font["OS/2"].sTypoAscender = 800
+        font["OS/2"].sTypoDescender = -200
+        font["OS/2"].usWinAscent = 800
+        font["OS/2"].usWinDescent = 200
 
-        # Parse SVG path
-        with open(svg_path) as f:
-            svg_data = f.read()
-        path = parse_path(SVGPath.fromstring(svg_data).d)
+        cmap.tableVersion = 0
+        cmap.tables = []
+        cmap.addcmap(3, 1, {})
 
-        # Create glyph
-        glyph_name = f"uni{ord(char):04X}"
-        pen = TTGlyphPen(font.getGlyphSet())
-        for segment in path:
-            if isinstance(segment, Line):
-                pen.lineTo((segment.end.real, segment.end.imag))
-            elif isinstance(segment, CubicBezier):
-                pen.curveTo(
-                    (segment.control1.real, segment.control1.imag),
-                    (segment.control2.real, segment.control2.imag),
-                    (segment.end.real, segment.end.imag)
-                )
+        for char, svg_filename in glyph_map.items():
+            svg_path = os.path.join(SVG_TEMP_DIR, svg_filename)
+            if not os.path.exists(svg_path):
+                continue
 
-        # Apply scaling/positioning (same logic as before)
-        bbox = pen.glyph.bbox
-        glyph_height = bbox[3] - bbox[1]
-        glyph_width = bbox[2] - bbox[0]
-        
-        scale_factor = get_scale_factors(char, glyph_height, glyph_width)
-        if char in descender_chars:
-            scale_factor *= 1.5
+            with open(svg_path) as f:
+                path = parse_path(SVGPath.fromstring(f.read()).d)
 
-        # Transform glyph
-        for contour in pen.glyph:
-            for point in contour.points:
-                point.x *= scale_factor
-                point.y *= scale_factor
-                if char in descender_chars:
-                    point.y += (200 - (glyph_height * scale_factor * 2/3))
+            pen = TTGlyphPen(None)
+            for seg in path:
+                if isinstance(seg, Line):
+                    pen.lineTo((seg.end.real, seg.end.imag))
+                elif isinstance(seg, CubicBezier):
+                    pen.curveTo(
+                        (seg.control1.real, seg.control1.imag),
+                        (seg.control2.real, seg.control2.imag),
+                        (seg.end.real, seg.end.imag)
+                    )
 
-        # Add to font
-        glyf_table[glyph_name] = pen.glyph
-        hmtx_table[glyph_name] = (int(glyph_width * scale_factor + 100), 0)
-        cmap_table.cmap[4, 3][ord(char)] = glyph_name
+            glyph = pen.glyph()
+            bbox = glyph.bbox
+            if not bbox:
+                continue
 
-    # Save and return
-    font.save(OUTPUT_FONT_PATH)
-    return send_file(OUTPUT_FONT_PATH, as_attachment=True, mimetype="font/ttf")
+            glyph_height = bbox[3] - bbox[1]
+            glyph_width = bbox[2] - bbox[0]
+            scale_factor = get_scale_factors(char, glyph_height, glyph_width)
+
+            if char in descender_chars:
+                scale_factor *= 1.5
+                y_shift = 200 - (glyph_height * scale_factor * 2/3)
+            else:
+                y_shift = 0
+
+            # Apply transformations
+            for contour in glyph:
+                for point in contour.points:
+                    point.x = point.x * scale_factor
+                    point.y = (point.y * scale_factor) + y_shift
+
+            glyph_name = f"uni{ord(char):04X}"
+            font["glyf"].glyphs[glyph_name] = glyph
+            font["hmtx"].metrics[glyph_name] = (int(glyph_width * scale_factor + 100), 0)
+            cmap.cmap[3, 1][ord(char)] = glyph_name
+
+        if not font["glyf"].glyphs:
+            raise ValueError("No valid glyphs created")
+
+        font.save(OUTPUT_FONT_PATH)
+        return send_file(OUTPUT_FONT_PATH, mimetype="font/ttf", as_attachment=True)
+
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"error": f"Font generation failed: {str(e)}"}), 500
