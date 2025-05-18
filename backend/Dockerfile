@@ -32,13 +32,15 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Clone and build FontForge for Python 3.9
-RUN git clone https://github.com/fontforge/fontforge.git \
-    && cd fontforge \
-    && ./autogen.sh \
+RUN wget https://github.com/fontforge/fontforge/releases/download/20230101/fontforge-20230101.tar.gz \
+    && tar -xzf fontforge-20230101.tar.gz \
+    && cd fontforge-20230101 \
     && ./configure --enable-pyextension --with-python=python3.9 \
     && make -j$(nproc) \
     && make install \
-    && ldconfig
+    && ldconfig \
+    && cd .. \
+    && rm -rf fontforge-20230101 fontforge-20230101.tar.gz
 
 # Install Python dependencies
 WORKDIR /backend
