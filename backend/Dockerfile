@@ -34,8 +34,7 @@ RUN apt-get update && apt-get install -y \
 # Clone and build FontForge for Python 3.9
 RUN git clone https://github.com/fontforge/fontforge.git \
     && cd fontforge \
-    && chmod +x bootstrap \
-    && ./bootstrap \
+    && ./autogen.sh \
     && ./configure --enable-pyextension --with-python=python3.9 \
     && make -j$(nproc) \
     && make install \
