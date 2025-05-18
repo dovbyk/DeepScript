@@ -1,6 +1,37 @@
 import cv2
 import os
 import numpy as np
+import pathlib
+import google.generativeai as genai
+
+genai.configure(api_key="AIzaSyCsFPJPRlBKFF3p7ARWo89zNPXUtsYyz40")
+
+def recognize_character_from_image(image_path):
+    model = genai.GenerativeModel("gemini-2.0-flash")
+
+    with open(image_path, "rb") as f:
+        image_data = f.read()
+
+    image_content = {
+        "mime_type": "image/png",  
+        "data": image_data
+    }
+
+    response = model.generate_content([
+        "What single handwritten character (a-z, A-Z, 0-9) is shown in this image? Only provide the character/number in response and nothing else",
+        image_content
+    ])
+
+    character = response.text.strip()
+
+    if len(character) != 1:
+        print(f"Warning: Gemini returned multiple characters or unexpected result: '{character}'")
+        character = character[0]  # take only the first character
+
+    return character
+
+
+
 
 def process_uploaded_image(input_image_path):
     output_directory = "processed_characters"
@@ -41,14 +72,19 @@ def process_uploaded_image(input_image_path):
     extracted_images = []
     
     for i, (x, y, w, h) in enumerate(sorted_boxes):
-    # Filter out noise by setting a size threshold
         if w > 10 and h > 10:
-            # Extract the character from the binary image
             char_image = binary_image[y:y + h, x:x + w]
-
-            # Save the character as an individual image
-            output_path = os.path.join(output_directory, f"character_{i}.png")
-            cv2.imwrite(output_path, 255 - char_image )  # Convert back to uint8
+    
+            temp_path = os.path.join(output_directory, f"temp_{i}.png")
+            cv2.imwrite(temp_path, 255 - char_image)
+    
+            # Recognize character using Gemini
+            recognized_char = recognize_character_from_image(temp_path)
+    
+            # Rename final output using recognized character
+            output_path = os.path.join(output_directory, f"{recognized_char}.png")
+            os.rename(temp_path, output_path)
+    
             print(f"Saved: {output_path}")
             extracted_images.append(output_path)
     
