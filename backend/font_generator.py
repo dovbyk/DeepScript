@@ -4,6 +4,7 @@ import traceback
 from PIL import Image, ImageStat, ImageOps
 from flask import send_file, jsonify
 from fontTools.ttLib import TTFont, newTable
+from fontTools.ttLib.tables._n_a_m_e import NameRecord
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.svgLib import SVGPath
 from svgpathtools import parse_path, Line, CubicBezier
@@ -77,20 +78,38 @@ def generate_font(png_file_items):
         font["glyf"] = newTable("glyf")
         font["hmtx"] = newTable("hmtx")
         font["cmap"] = cmap = newTable("cmap")
+        font["name"] = name = newTable("name")
 
         # Font metrics
         units_per_em = 1000
         font["head"].unitsPerEm = units_per_em
+        font["head"].created = 0
+        font["head"].modified = 0
+        
+        # Vertical metrics
         font["hhea"] = newTable("hhea")
         font["hhea"].ascent = 800
         font["hhea"].descent = -200
-        font["OS/2"] = newTable("OS/2")
-        font["OS/2"].version = 4
-        font["OS/2"].sTypoAscender = 800
-        font["OS/2"].sTypoDescender = -200
-        font["OS/2"].usWinAscent = 800
-        font["OS/2"].usWinDescent = 200
+        font["hhea"].height = 1000
+        
+        # OS/2 table
+        font["OS/2"] = os2 = newTable("OS/2")
+        os2.version = 4
+        os2.sTypoAscender = 800
+        os2.sTypoDescender = -200
+        os2.usWinAscent = 800
+        os2.usWinDescent = 200
+        os2.sxHeight = 500
+        os2.fsSelection = 0b00000000_00000000
+        
+        # Name table
+        name.names = [
+            NameRecord(3, 1, 0x409, 1, "CustomFont"),        # Family Name
+            NameRecord(3, 1, 0x409, 4, "CustomFont Regular"), # Full Name
+            NameRecord(3, 1, 0x409, 6, "CustomFont-Regular")  # PostScript Name
+        ]
 
+        # Character mapping
         cmap.tableVersion = 0
         cmap.tables = []
         cmap.addcmap(3, 1, {})
@@ -125,14 +144,15 @@ def generate_font(png_file_items):
 
             if char in descender_chars:
                 scale_factor *= 1.5
-                y_shift = 200 - (glyph_height * scale_factor * 2/3)
+                main_body_height = glyph_height * scale_factor * 2/3
+                y_shift = 200 - main_body_height
             else:
                 y_shift = 0
 
             # Apply transformations
             for contour in glyph:
                 for point in contour.points:
-                    point.x = point.x * scale_factor
+                    point.x *= scale_factor
                     point.y = (point.y * scale_factor) + y_shift
 
             glyph_name = f"uni{ord(char):04X}"
