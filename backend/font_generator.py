@@ -70,48 +70,67 @@ def generate_font(png_file_items):
     try:
         process_png_files(png_file_items)
 
-        # Build glyph map with validation
-        glyph_map = {
-            item["new_name"][0]: f"{item['new_name'][0]}.svg"
-            for item in png_file_items 
-            if item.get("new_name") and len(item["new_name"]) == 1
-        }
+        # Validate and build glyph map
+        glyph_map = {}
+        for item in png_file_items:
+            new_name = item.get("new_name", "")
+            if len(new_name) == 1:
+                glyph_map[new_name] = f"{new_name}.svg"
 
         if not glyph_map:
             return jsonify({"error": "No valid glyphs provided"}), 400
 
         # Font initialization
         font = TTFont()
-        font.importXML(os.path.join(os.path.dirname(__file__), 'empty_font.ttx'))  # Start with clean template
-
-        # Font metadata
-        font["name"].names = []
-        for name_id, string in [
-            (1, "CustomFont"),
-            (4, "CustomFont Regular"),
-            (6, "CustomFont-Regular")
-        ]:
-            nr = NameRecord()
-            nr.platformID, nr.platEncID, nr.langID = 3, 1, 0x409
-            nr.nameID, nr.string = name_id, string
-            font["name"].names.append(nr)
+        font["head"] = newTable("head")
+        font["glyf"] = newTable("glyf")
+        font["hmtx"] = newTable("hmtx")
+        font["cmap"] = newTable("cmap")
+        font["name"] = newTable("name")
+        font["OS/2"] = newTable("OS/2")
+        font["hhea"] = newTable("hhea")
 
         # Font metrics
         font["head"].unitsPerEm = 1000
         font["hhea"].ascent = 800
         font["hhea"].descent = -200
-        font["OS/2"].sTypoAscender = 800
-        font["OS/2"].sTypoDescender = -200
-        font["OS/2"].usWinAscent = 800
-        font["OS/2"].usWinDescent = 200
-        font["OS/2"].sxHeight = 500
+        font["hhea"].lineGap = 0
+        
+        # OS/2 table
+        os2 = font["OS/2"]
+        os2.version = 4
+        os2.sTypoAscender = 800
+        os2.sTypoDescender = -200
+        os2.usWinAscent = 800
+        os2.usWinDescent = 200
+        os2.sxHeight = 500
 
-        # CMAP configuration
+        # Name table
+        name = font["name"]
+        name.names = []
+        for params in [
+            (1, "CustomFont"),
+            (4, "CustomFont Regular"),
+            (6, "CustomFont-Regular")
+        ]:
+            nr = NameRecord()
+            nr.platformID = 3
+            nr.platEncID = 1
+            nr.langID = 0x409
+            nr.nameID, nr.string = params
+            name.names.append(nr)
+
+        # CMAP table
+        cmap = font["cmap"]
+        cmap.tableVersion = 0
+        cmap.tables = []
+        
         cmap_table = CmapSubtable.newSubtable(4)
         cmap_table.platformID = 3
         cmap_table.platEncID = 1
         cmap_table.language = 0
         cmap_table.cmap = {}
+        cmap.tables.append(cmap_table)
 
         # Glyph processing
         for char, svg_filename in glyph_map.items():
@@ -120,7 +139,8 @@ def generate_font(png_file_items):
                 continue
 
             with open(svg_path) as f:
-                path = parse_path(SVGPath.fromstring(f.read()).d)
+                svg_content = f.read()
+                path = parse_path(SVGPath.fromstring(svg_content).d)
 
             pen = TTGlyphPen(None)
             for seg in path:
@@ -137,8 +157,36 @@ def generate_font(png_file_items):
             if not glyph.bbox:
                 continue
 
-            # Transform calculations
+            # Calculate transformations
             bbox = glyph.bbox
             glyph_height = bbox[3] - bbox[1]
             glyph_width = bbox[2] - bbox[0]
-            scale_factor = get_scale_f
+            scale_factor = get_scale_factors(char, glyph_height, glyph_width)
+
+            if char in descender_chars:
+                scale_factor *= 1.5
+                main_body_height = glyph_height * scale_factor * 2/3
+                y_shift = 200 - main_body_height
+            else:
+                y_shift = 0
+
+            # Apply transformations
+            for contour in glyph:
+                for point in contour.points:
+                    point.x *= scale_factor
+                    point.y = (point.y * scale_factor) + y_shift
+
+            glyph_name = f"uni{ord(char):04X}"
+            font["glyf"].glyphs[glyph_name] = glyph
+            font["hmtx"].metrics[glyph_name] = (int(glyph_width * scale_factor + 100), 0)
+            cmap_table.cmap[ord(char)] = glyph_name
+
+        if not font["glyf"].glyphs:
+            raise ValueError("No valid glyphs created")
+
+        font.save(OUTPUT_FONT_PATH)
+        return send_file(OUTPUT_FONT_PATH, mimetype="font/ttf", as_attachment=True)
+
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"error": f"Font generation failed: {str(e)}"}), 500
