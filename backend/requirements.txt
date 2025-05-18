@@ -4,4 +4,4 @@ opencv-python>=4.7
 numpy>=1.21
 Pillow>=9.0
 gunicorn>=20.1.0
-google-generativeai==0.3.2
+git+https://github.com/google/generative-ai-python.git
