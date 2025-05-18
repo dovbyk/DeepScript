@@ -2,7 +2,6 @@ import os
 import subprocess
 from PIL import Image, ImageStat, ImageOps
 from fontTools.ttLib import newTable 
-import psMat
 from flask import send_file
 
 # Temporary directories and output font path
