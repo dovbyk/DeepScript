@@ -3,9 +3,10 @@ FROM python:3.9-slim
 # Set noninteractive mode
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install system dependencies
+# Install system dependencies (ADD xz-utils to handle .tar.xz)
 RUN apt-get update && apt-get install -y \
     wget \
+    xz-utils \
     git \
     build-essential \
     autoconf \
@@ -31,16 +32,17 @@ RUN apt-get update && apt-get install -y \
     potrace \
     && rm -rf /var/lib/apt/lists/*
 
-# Clone and build FontForge for Python 3.9
-RUN wget https://github.com/fontforge/fontforge/releases/download/20230101/fontforge-20230101.tar.gz \
-    && tar -xzf fontforge-20230101.tar.gz \
-    && cd fontforge-20230101 \
+# Download LATEST FontForge release tarball (correct URL)
+RUN wget https://github.com/fontforge/fontforge/releases/download/20230101/FontForge-2023-01-01.tar.xz \
+    && tar -xJf FontForge-2023-01-01.tar.xz \
+    && cd FontForge-2023-01-01 \
     && ./configure --enable-pyextension --with-python=python3.9 \
     && make -j$(nproc) \
     && make install \
     && ldconfig \
     && cd .. \
-    && rm -rf fontforge-20230101 fontforge-20230101.tar.gz
+    && rm -rf FontForge-2023-01-01 FontForge-2023-01-01.tar.xz
+
 
 # Install Python dependencies
 WORKDIR /backend
