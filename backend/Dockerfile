@@ -5,6 +5,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install system dependencies (ADD xz-utils to handle .tar.xz)
 RUN apt-get update && apt-get install -y \
+    cmake \
+    ninja-build \
     wget \
     xz-utils \
     git \
@@ -36,12 +38,14 @@ RUN apt-get update && apt-get install -y \
 RUN wget https://github.com/fontforge/fontforge/releases/download/20230101/fontforge-20230101.tar.xz \
     && tar -xJf fontforge-20230101.tar.xz \
     && cd fontforge-20230101 \
-    && ./configure --enable-pyextension --with-python=python3.9 \
-    && make -j$(nproc) \
-    && make install \
+    && mkdir build \
+    && cd build \
+    && cmake -GNinja -DENABLE_PYTHON_EXTENSION=ON -DPYTHON_EXECUTABLE=/usr/local/bin/python3.9 .. \
+    && ninja \
+    && ninja install \
     && ldconfig \
-    && cd .. \
-    && rm -rf fontforge-20230101 fontforge-20230101.tar.xz
+    && cd ../.. \
+    && rm -rf fontforge-20230101*
 
 
 # Install Python dependencies
