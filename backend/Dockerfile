@@ -1,4 +1,3 @@
-# Replace your existing Dockerfile with:
 FROM python:3.9-slim
 
 # Set noninteractive mode
@@ -26,18 +25,17 @@ RUN apt-get update && apt-get install -y \
     libuninameslist-dev \
     libxml2-dev \
     libreadline-dev \
-    python3.9-dev \  # Required for Python 3.9 bindings
+    python3.9-dev \    # <--- Backslash MUST be last character (no trailing space/comment)
     zlib1g-dev \
     libgl1-mesa-glx \
     libglib2.0-0 \
     potrace \
-    && rm -rf /var/lib/apt/lists/*
-
+    && rm -rf /var/lib/apt/lists/*  # <--- No backslash here
 
 # Clone and build FontForge for Python 3.9
 RUN git clone https://github.com/fontforge/fontforge.git \
     && cd fontforge \
-    && chmod +x bootstrap \  # Grant execute permission
+    && chmod +x bootstrap \
     && ./bootstrap \
     && ./configure --enable-pyextension --with-python=python3.9 \
     && make -j$(nproc) \
