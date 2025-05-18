@@ -25,12 +25,12 @@ RUN apt-get update && apt-get install -y \
     libuninameslist-dev \
     libxml2-dev \
     libreadline-dev \
-    python3.9-dev \    # <--- Backslash MUST be last character (no trailing space/comment)
+    python3.9-dev \
     zlib1g-dev \
     libgl1-mesa-glx \
     libglib2.0-0 \
     potrace \
-    && rm -rf /var/lib/apt/lists/*  # <--- No backslash here
+    && rm -rf /var/lib/apt/lists/*
 
 # Clone and build FontForge for Python 3.9
 RUN git clone https://github.com/fontforge/fontforge.git \
