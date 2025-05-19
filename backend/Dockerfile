@@ -1,22 +1,35 @@
-FROM python:3.9-slim
+FROM ubuntu:20.04
 
-# Set noninteractive mode
+# Set noninteractive mode to avoid tzdata prompt
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install system dependencies (only essentials now)
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    potrace \
+    python3 \
+    python3-pip \
+    fontforge \
+    python3-fontforge \
     libgl1-mesa-glx \
     libglib2.0-0 \
+    libfreetype6 \
+    potrace \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies (including fontTools/svgpathtools)
-WORKDIR /backend
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt \
-    && pip install fonttools svgpathtools
+# Symlink python3 to python
+RUN ln -s /usr/bin/python3 /usr/bin/python
 
-# Copy code and run
+# Set working directory
+WORKDIR /backend
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip3 install --upgrade pip && pip3 install --no-cache-dir -r requirements.txt
+
+# Copy code
 COPY . .
+
+# Expose port
 EXPOSE 5000
+
+# Run the app
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "server:app", "--timeout", "300"]
