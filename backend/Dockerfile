@@ -38,7 +38,8 @@ RUN apt-get update && apt-get install -y \
     libgl1-mesa-glx \
     libglib2.0-0 \
     libfreetype6 \
-    gettext
+    gettext \
+    libgtk-3-dev
 
 # Install Python 3.9.19 from source
 WORKDIR /opt
