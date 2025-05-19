@@ -36,7 +36,7 @@ const FontUploader: React.FC<FontUploaderProps> = ({
     formData.append('image', file);
 
     try {
-      const response = await fetch('https://betadeep.onrender.com/process-image', {
+      const response = await fetch('https://betadeep2.onrender.com/process-image', {
         method: 'POST',
         body: formData,
       });
@@ -188,7 +188,7 @@ const FontUploader: React.FC<FontUploaderProps> = ({
           {processedImages.map((img, idx) => (
             <div key={idx} className="flex flex-col items-center">
               <img 
-                src={`https://betadeep.onrender.com/get-image?path=${encodeURIComponent(img.path)}`} 
+                src={`https://betadeep2.onrender.com/get-image?path=${encodeURIComponent(img.path)}`} 
                 alt={`Processed image ${idx}`} 
                 className="h-40"
               />
