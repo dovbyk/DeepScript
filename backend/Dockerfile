@@ -1,7 +1,5 @@
 FROM ubuntu:20.04
-
 ENV DEBIAN_FRONTEND=noninteractive
-
 # Install build dependencies for Python and FontForge
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -39,7 +37,8 @@ RUN apt-get update && apt-get install -y \
     potrace \
     libgl1-mesa-glx \
     libglib2.0-0 \
-    libfreetype6
+    libfreetype6 \
+    gettext
 
 # Install Python 3.9.19 from source
 WORKDIR /opt
@@ -49,11 +48,9 @@ RUN wget https://www.python.org/ftp/python/3.9.19/Python-3.9.19.tgz && \
     ./configure --enable-optimizations && \
     make -j$(nproc) && \
     make altinstall
-
 # Symlink python3 and pip3 to our custom Python
 RUN ln -sf /usr/local/bin/python3.9 /usr/bin/python3 && \
     ln -sf /usr/local/bin/pip3.9 /usr/bin/pip3
-
 # Build FontForge from source with Python 3.9 bindings
 WORKDIR /opt
 RUN git clone --depth=1 https://github.com/fontforge/fontforge.git && \
@@ -62,16 +59,10 @@ RUN git clone --depth=1 https://github.com/fontforge/fontforge.git && \
     cmake .. -DPYTHON_EXECUTABLE=/usr/local/bin/python3.9 -DENABLE_PYTHON_SCRIPTING=ON -DENABLE_PYTHON_EXTENSION=ON && \
     make -j$(nproc) && \
     make install
-
 RUN ldconfig
-
 WORKDIR /backend
-
 COPY requirements.txt .
 RUN pip3 install --upgrade pip && pip3 install --no-cache-dir -r requirements.txt
-
 COPY . .
-
 EXPOSE 5000
-
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "server:app", "--timeout", "300"]
