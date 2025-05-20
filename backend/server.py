@@ -45,6 +45,8 @@ def receive_uploads():
     # Clean up the temp directory
     shutil.rmtree(temp_dir, ignore_errors=True)
 
+    print("Uploads directory received and replaced")
+    
     return jsonify({'status': 'success', 'message': 'Uploads directory replaced with received data.'})
 
 
