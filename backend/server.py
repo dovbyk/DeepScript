@@ -8,7 +8,7 @@ import io
 import json
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True, resources={r"/*": {"origins": "https://betadeep-virid.vercel.app"}})
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": "https://deepscript.vercel.app"}})
 
 UPLOAD_FOLDER = "uploads"
 OUTPUT_FOLDER = "output"
