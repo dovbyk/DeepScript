@@ -40,7 +40,6 @@ def generate_font_endpoint():
         return jsonify({"error": "Missing 'new_names' field"}), 400
 
     try:
-        import json
         new_names = json.loads(request.form['new_names'])
     except Exception:
         return jsonify({"error": "Invalid 'new_names' JSON format"}), 400
