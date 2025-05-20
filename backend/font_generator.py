@@ -86,19 +86,23 @@ def generate_font(png_file_items):
 
     # Define character sets
     uppercase_chars = set('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-    ascender_chars = set('bdfhklt')
-    descender_chars = set('gpqy')
+    ascender_chars = set('bdfhklt()')
+    descender_chars = set('gpqy,')
 
     def get_scale_factors(char, glyph_height, glyph_width):
-        if char in uppercase_chars or char in ascender_chars:
+        if char in ['.', ',']:
+            height_target = 150  # Smaller height for punctuation
+            width_target = 150   # Smaller width for punctuation
+        elif char in uppercase_chars or char in ascender_chars:
             height_target = 700
             width_target = 600
         elif char in descender_chars:
             height_target = 500
             width_target = 500
-        else:
+        else:  # regular lowercase
             height_target = 500
             width_target = 500
+        
         height_scale = height_target / glyph_height if glyph_height > 0 else 1
         width_scale = width_target / glyph_width if glyph_width > 0 else 1
         return min(height_scale, width_scale)
