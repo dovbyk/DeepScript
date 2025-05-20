@@ -36,7 +36,7 @@ const FontUploader: React.FC<FontUploaderProps> = ({
     formData.append('image', file);
 
     try {
-      const response = await fetch('https://gemini.onrender.com/process-image', {
+      const response = await fetch('https://gemini-api-6h5f.onrender.com/process-image', {
         method: 'POST',
         body: formData,
       });
@@ -120,7 +120,7 @@ const FontUploader: React.FC<FontUploaderProps> = ({
 
     // Step 1: Fetch each image blob and append to formData with new name
     for (const img of processedImages) {
-      const response = await fetch(`https://gemini.onrender.com/get-image?path=${encodeURIComponent(img.path)}`);
+      const response = await fetch(`https://gemini-api-6h5f.onrender.com/get-image?path=${encodeURIComponent(img.path)}`);
       if (!response.ok) throw new Error(`Failed to fetch image at ${img.path}`);
 
       const blob = await response.blob();
@@ -198,7 +198,7 @@ const FontUploader: React.FC<FontUploaderProps> = ({
           {processedImages.map((img, idx) => (
             <div key={idx} className="flex flex-col items-center">
               <img 
-                src={`https://gemini.onrender.com/get-image?path=${encodeURIComponent(img.path)}`} 
+                src={`https://gemini-api-6h5f.onrender.com/get-image?path=${encodeURIComponent(img.path)}`} 
                 alt={`Processed image ${idx}`} 
                 className="h-40"
               />
