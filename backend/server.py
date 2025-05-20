@@ -3,10 +3,8 @@ from flask_cors import CORS
 import os
 from text_rendering import render_text
 from font_generator import generate_font 
-import zipfile
-import shutil
-import tempfile
-
+from werkzeug.utils import secure_filename
+import io
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": "https://betadeep-virid.vercel.app"}})
@@ -16,38 +14,6 @@ OUTPUT_FOLDER = "output"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
-
-@app.route('/receive-uploads', methods=['POST'])
-def receive_uploads():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file uploaded'}), 400
-
-    file = request.files['file']
-    temp_dir = tempfile.mkdtemp()  # Temporary directory for extraction
-    zip_path = os.path.join(temp_dir, 'uploads.zip')
-    file.save(zip_path)
-
-    # Extract ZIP to temp_dir/uploads
-    extracted_uploads_dir = os.path.join(temp_dir, 'uploads')
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        zip_ref.extractall(extracted_uploads_dir)
-
-    # Path to the receiver's actual uploads directory
-    receiver_uploads = os.path.abspath('uploads')
-
-    # Remove the existing uploads directory and its contents
-    if os.path.exists(receiver_uploads):
-        shutil.rmtree(receiver_uploads)
-
-    # Move the extracted uploads directory to the receiver's uploads path
-    shutil.move(extracted_uploads_dir, receiver_uploads)
-
-    # Clean up the temp directory
-    shutil.rmtree(temp_dir, ignore_errors=True)
-
-    print("Uploads directory received and replaced")
-    
-    return jsonify({'status': 'success', 'message': 'Uploads directory replaced with received data.'})
 
 
 @app.route('/render', methods=['POST'])
@@ -66,19 +32,35 @@ def render():
 @app.route('/generate-font', methods=['POST'])
 def generate_font_endpoint():
     """
-    Expects a JSON payload with:
-    {
-       "png_files": [ { "original_path": "<path>", "new_name": "<new_name>" }, ... ]
-    }
-    The generate_font() function will process these PNG files and return the generated TTF file.
+    Expects multipart/form-data with:
+    - image files
+    - new_names: JSON list of new names in the same order as the uploaded files
     """
-    data = request.get_json()
-    png_files = data.get("png_files")
-    if not png_files or not isinstance(png_files, list):
-        return jsonify({"error": "No png_files provided"}), 400
-    print(png_files)
-    return generate_font(png_files)
+    if 'new_names' not in request.form:
+        return jsonify({"error": "Missing 'new_names' field"}), 400
 
+    try:
+        import json
+        new_names = json.loads(request.form['new_names'])
+    except Exception:
+        return jsonify({"error": "Invalid 'new_names' JSON format"}), 400
+
+    files = request.files.getlist("images")
+    if not files or len(files) != len(new_names):
+        return jsonify({"error": "Mismatch between files and new_names"}), 400
+
+    png_file_items = []
+    for file, new_name in zip(files, new_names):
+        if file.filename == '':
+            continue
+        # Secure and read the file
+        filename = secure_filename(new_name)
+        png_file_items.append({
+            "file": file.stream,  # Pass file-like object
+            "new_name": filename
+        })
+
+    return generate_font(png_file_items)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
