@@ -91,8 +91,8 @@ def generate_font(png_file_items):
 
     def get_scale_factors(char, glyph_height, glyph_width):
         if char in ['.', ',']:
-            height_target = 150  # Smaller height for punctuation
-            width_target = 150   # Smaller width for punctuation
+            height_target = 120  # Smaller height for punctuation
+            width_target = 120   # Smaller width for punctuation
         elif char in uppercase_chars or char in ascender_chars:
             height_target = 700
             width_target = 600
