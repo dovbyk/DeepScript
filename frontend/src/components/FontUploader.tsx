@@ -128,6 +128,9 @@ const FontUploader: React.FC<FontUploaderProps> = ({
       formData.append('images', file);
     }
 
+    const newNames = processedImages.map(img => img.name);
+    formData.append('new_names', JSON.stringify(newNames));
+    
     // Step 2: Send formData to backend
     const fontResponse = await fetch("https://betadeep.onrender.com/generate-font", {
       method: "POST",
