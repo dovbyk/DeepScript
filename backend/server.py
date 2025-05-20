@@ -5,6 +5,7 @@ from text_rendering import render_text
 from font_generator import generate_font 
 from werkzeug.utils import secure_filename
 import io
+import json
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": "https://betadeep-virid.vercel.app"}})
