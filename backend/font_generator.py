@@ -14,12 +14,9 @@ os.makedirs(BMP_TEMP_DIR, exist_ok=True)
 os.makedirs(SVG_TEMP_DIR, exist_ok=True)
 os.makedirs("output", exist_ok=True)
 
-def convert_png_to_bmp(input_path, output_path):
-    """
-    Convert PNG to BMP (grayscale and binarized).
-    If the image is dark (likely a black background), invert it.
-    """
-    img = Image.open(input_path).convert("L")
+def convert_png_file_to_bmp(file_stream, output_path):
+    """Convert in-memory PNG file to BMP (grayscale, binarized)."""
+    img = Image.open(file_stream).convert("L")
     stat = ImageStat.Stat(img)
     avg_brightness = stat.mean[0]
     if avg_brightness < 128:
@@ -36,24 +33,22 @@ def convert_bmp_to_svg(bmp_path, svg_path):
 
 def process_png_files(png_file_items):
     """
-    Expects a list of dictionaries with keys "original_path" and "new_name".
-    For each item, convert the PNG to BMP and then to SVG.
-    The SVG is saved using the base name (extension removed) of the provided new_name.
+    Expects a list of dictionaries with keys "file" (file-like) and "new_name".
+    Converts to BMP and SVG using in-memory files.
     """
     for item in png_file_items:
-        original_path = item.get("original_path")
+        file_stream = item.get("file")
         new_name = item.get("new_name")
-        if not original_path or not os.path.exists(original_path):
-            print(f"PNG file does not exist: {original_path}")
+        if not file_stream or not new_name:
             continue
-        if new_name and isinstance(new_name, str):
-            base_name, _ = os.path.splitext(new_name)
-        else:
-            base_name, _ = os.path.splitext(os.path.basename(original_path))
+
+        base_name, _ = os.path.splitext(new_name)
         bmp_path = os.path.join(BMP_TEMP_DIR, base_name + ".bmp")
         svg_path = os.path.join(SVG_TEMP_DIR, base_name + ".svg")
-        convert_png_to_bmp(original_path, bmp_path)
+
+        convert_png_file_to_bmp(file_stream, bmp_path)
         convert_bmp_to_svg(bmp_path, svg_path)
+
 
 def generate_font(png_file_items):
     """
