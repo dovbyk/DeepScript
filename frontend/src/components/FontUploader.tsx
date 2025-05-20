@@ -132,7 +132,7 @@ const FontUploader: React.FC<FontUploaderProps> = ({
     formData.append('new_names', JSON.stringify(newNames));
     
     // Step 2: Send formData to backend
-    const fontResponse = await fetch("https://deepscript.onrender.com/generate-font", {
+    const fontResponse = await fetch("https://deepscript-c93v.onrender.com/generate-font", {
       method: "POST",
       body: formData,
     });
