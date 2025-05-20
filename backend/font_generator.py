@@ -4,6 +4,7 @@ from PIL import Image, ImageStat, ImageOps
 import fontforge
 import psMat
 from flask import send_file
+import shutil
 
 # Temporary directories and output font path
 BMP_TEMP_DIR = "bmp_output_temp"
@@ -13,6 +14,10 @@ OUTPUT_FONT_PATH = os.path.join("output", "CustomFont3.ttf")
 os.makedirs(BMP_TEMP_DIR, exist_ok=True)
 os.makedirs(SVG_TEMP_DIR, exist_ok=True)
 os.makedirs("output", exist_ok=True)
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
 
 def convert_png_file_to_bmp(file_stream, output_path):
     """Convert in-memory PNG file to BMP (grayscale, binarized)."""
@@ -116,6 +121,15 @@ def generate_font(png_file_items):
     font.ascent = 800
     font.descent = 200
 
+    ASSETS_DIR = os.path.join(BASE_DIR, "assets")
+    for svg_filename in set(glyph_map.values()):
+        src_path = os.path.join(ASSETS_DIR, svg_filename)
+        dst_path = os.path.join(SVG_TEMP_DIR, svg_filename)
+        if os.path.exists(src_path) and not os.path.exists(dst_path):
+            shutil.copy(src_path, dst_path)
+            print(f"Copied {svg_filename} from assets to SVG_TEMP_DIR.")
+    
+    
     # Create glyphs using the glyph_map.
     for char, svg_filename in glyph_map.items():
         svg_path = os.path.join(SVG_TEMP_DIR, svg_filename)
