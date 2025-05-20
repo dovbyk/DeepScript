@@ -55,8 +55,9 @@ def generate_font_endpoint():
             continue
         # Secure and read the file
         filename = secure_filename(new_name)
+        file_bytes = io.BytesIO(file.read())  # ✅ read content
         png_file_items.append({
-            "file": file.stream,  # Pass file-like object
+            "file": file_bytes,  # Pass file-like object
             "new_name": filename
         })
 
