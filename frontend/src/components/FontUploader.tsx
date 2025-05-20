@@ -108,42 +108,49 @@ const FontUploader: React.FC<FontUploaderProps> = ({
 
   // Generate font from the processed images without auto-downloading
   const generateFont = async () => {
-    if (!processedImages.length) {
-      alert("No images to process");
-      return;
-    }
+  if (!processedImages.length) {
+    alert("No images to process");
+    return;
+  }
 
-    setIsGenerating(true);
+  setIsGenerating(true);
 
-    // Prepare the payload with updated names
-    const pngFileMappings = processedImages.map(img => ({
-      original_path: img.path,
-      new_name: img.name,
-    }));
+  try {
+    const formData = new FormData();
 
-    try {
-      const response = await fetch("https://betadeep.onrender.com/generate-font", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ png_files: pngFileMappings }),
-      });
+    // Step 1: Fetch each image blob and append to formData with new name
+    for (const img of processedImages) {
+      const response = await fetch(`https://betadeep2.onrender.com/get-image?path=${encodeURIComponent(img.path)}`);
+      if (!response.ok) throw new Error(`Failed to fetch image at ${img.path}`);
 
-      if (!response.ok) {
-        throw new Error("Error generating font");
-      }
-
-      // Convert response to a File object
       const blob = await response.blob();
-      const ttfFile = new File([blob], "CustomFont.ttf", { type: "font/ttf" });
-      setGeneratedFont(ttfFile);
-      alert("Font generated! Please review the generated font below.");
-    } catch (error) {
-      console.error("Font generation error:", error);
-      alert("Failed to generate font");
-    } finally {
-      setIsGenerating(false);
+      const file = new File([blob], img.name, { type: blob.type });
+      formData.append('images', file);
     }
-  };
+
+    // Step 2: Send formData to backend
+    const fontResponse = await fetch("https://betadeep.onrender.com/generate-font", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!fontResponse.ok) {
+      throw new Error("Error generating font");
+    }
+
+    // Step 3: Convert response to a File object
+    const fontBlob = await fontResponse.blob();
+    const ttfFile = new File([fontBlob], "CustomFont.ttf", { type: "font/ttf" });
+    setGeneratedFont(ttfFile);
+    alert("Font generated! Please review the generated font below.");
+  } catch (error) {
+    console.error("Font generation error:", error);
+    alert("Failed to generate font");
+  } finally {
+    setIsGenerating(false);
+  }
+};
+
 
   return (
     <div className="space-y-4">
