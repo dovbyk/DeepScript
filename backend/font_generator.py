@@ -16,6 +16,7 @@ os.makedirs("output", exist_ok=True)
 
 def convert_png_file_to_bmp(file_stream, output_path):
     """Convert in-memory PNG file to BMP (grayscale, binarized)."""
+    file_stream.seek(0)
     img = Image.open(file_stream).convert("L")
     stat = ImageStat.Stat(img)
     avg_brightness = stat.mean[0]
