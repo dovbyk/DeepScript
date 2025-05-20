@@ -60,8 +60,14 @@ def generate_font(png_file_items):
     # Convert PNGs to SVGs
     process_png_files(png_file_items)
 
+    
     # Build glyph_map from the provided items.
-    glyph_map = {}
+    glyph_map = {   "0": "0.svg", "1": "1.svg", "2": "2.svg", "3": "3.svg",
+    "4": "4.svg", "5": "5.svg", "6": "6.svg", "7": "7.svg", 
+    "8": "8.svg", "9": "9.svg", ".": "..svg", ",": ",.svg",
+    "-": "-.svg", "(": "(.svg", ")": ").svg", "+": "+.svg",
+    "!": "!.svg", "?": "?.svg" 
+    }
     for item in png_file_items:
         new_name = item.get("new_name")
         if new_name and isinstance(new_name, str):
