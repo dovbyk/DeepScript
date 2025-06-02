@@ -24,6 +24,7 @@ const FontUploader: React.FC<FontUploaderProps> = ({
   const [processedImages, setProcessedImages] = useState<ProcessedImage[]>([]);
   const [generatedFont, setGeneratedFont] = useState<File | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isProcessingImage, setIsProcessingImage] = useState(false);
 
   const isValidJPEG = (fileName: string) => {
     const lower = fileName.toLowerCase();
@@ -32,6 +33,7 @@ const FontUploader: React.FC<FontUploaderProps> = ({
 
   // Sends the JPEG file to the /process-image endpoint.
   const sendImageToEndpoint = async (file: File) => {
+    setIsProcessingImage(true);
     const formData = new FormData();
     formData.append('image', file);
 
@@ -56,6 +58,9 @@ const FontUploader: React.FC<FontUploaderProps> = ({
       console.error('Error processing image:', error);
       alert('Error processing image');
     }
+    finally{
+      setIsProcessingImage(false);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,17 +81,18 @@ const FontUploader: React.FC<FontUploaderProps> = ({
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    if (disabled) return;
+    if (disabled || isProcessingImage) return;
     setDragActive(true);
   };
 
   const handleDragLeave = () => {
+    if (isProcessingImage) return;
     setDragActive(false);
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    if (disabled) return;
+    if (disabled || isProcessingImage) return;
     setDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0];
@@ -175,6 +181,19 @@ const FontUploader: React.FC<FontUploaderProps> = ({
           onChange={handleFileChange}
           disabled={disabled}
         />
+
+        {/*Loader overlay inside drop canvas */}
+        {isProcessingImage && (
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-10 rounded-lg">
+            <svg className="animate-spin h-6 w-6 text-accent mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+            </svg>
+            <p className="text-accent text-sm font-medium">Image is being processed, Please Wait...</p>
+          </div>
+        )}        
+
+        
         <div className="flex flex-col items-center justify-center space-y-2">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
