@@ -17,9 +17,8 @@ This project is used to convert any digital text into a custom handwritten forma
 
 * Make sure to avoid latex code in the text
 
-## Sample Outputs
-![Output1](frontend/public/output1.jpeg)
-![Output2](frontend/public/output2.jpeg)
+## Sample Output
+![Output](frontend/public/output.jpg)
 
 
 ## Deployments
