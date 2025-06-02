@@ -71,8 +71,21 @@ def generate_font(png_file_items):
     "4": "4.svg", "5": "5.svg", "6": "6.svg", "7": "7.svg", 
     "8": "8.svg", "9": "9.svg", ".": "$.svg", ",": "#.svg",
     "-": "-.svg", "(": "(.svg", ")": ").svg", "+": "+.svg",
-    "!": "!.svg", "?": "?.svg" 
+    "!": "!.svg", "?": "?.svg", "A": "A.svg", "B": "B.svg",
+    "C": "C.svg", "D": "D.svg",  
+    "E": "E.svg", "F": "F.svg",  
+    "G": "G.svg", "H": "H.svg",  
+    "I": "I.svg", "J": "J.svg",  
+    "L": "L.svg", "K": "K.svg",  
+    "M": "M.svg", "N": "N.svg",  
+    "P": "P.svg", "O": "O.svg",  
+    "Q": "Q.svg", "R": "R.svg",  
+    "T": "T.svg", "S": "S.svg",  
+    "U": "U.svg", "V": "V.svg",  
+    "X": "X.svg", "W": "W.svg",
+    "Y": "Y.svg", "Z": "Z.svg"  
     }
+    
     for item in png_file_items:
         new_name = item.get("new_name")
         if new_name and isinstance(new_name, str):
