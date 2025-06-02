@@ -9,7 +9,7 @@ This project is used to convert any digital text into a custom handwritten forma
 * Select the existing font and generate the output. You will be given a preview of it and then you can download it
 
      ### Upload your writing Sample
-    * For Uploading your own handwriting sample, follow the `handwriting_sample.png` format. Make sure the image is clean and the characters are visible. Try to avoid the Scanned Image
+    * For Uploading your own handwriting sample, follow the `handwriting_sample.jpeg` format. Make sure the image is clean and the characters are visible. Try to avoid the Scanned Image
     * After you upload, each characters are segmented and properly renamed. The renaming of those images should be in the format a.png , b.png etc. which will be done by Gemini API
     * If some of the images are incorrectly labelled, then correct it.
     * Hit the Generate Font button and you will get your font file
