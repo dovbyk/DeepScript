@@ -27,7 +27,7 @@ This project is used to convert any digital text into a custom handwritten forma
 
 
 ## ⚠️ Disclaimer
-Since the backend is deployed using free instance on [Render](render.com), the first output generation may take few more seconds but after that it will come back to normal. 
-
+* Since the backend is deployed using free instance on [Render](render.com), the first output generation may take few more seconds but after that it will come back to normal. 
+* You can see some small boxes appearning in the above output image. This occurs if your input text contains symbols that were not initially included in the font. So, simply remove it from the text. 
 
 
