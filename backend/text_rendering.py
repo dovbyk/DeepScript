@@ -9,6 +9,7 @@ def apply_text_shadow(draw, text, position, font, shadow_offset=(2, 2), shadow_c
 
 
 def render_text(input_text, font_path, output_path):
+    print(input_text)
     width, height = 2680, 3508
     x, y = 50, 50
     pages = []
