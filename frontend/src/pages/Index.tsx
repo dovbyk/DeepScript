@@ -124,7 +124,7 @@ const Index = () => {
               className="absolute top-0 right-0 p-4"
             >
               <img 
-                src="/github.svg" 
+                src="/github.jpg" 
                 alt="GitHub" 
                 className="w-8 h-8 hover:opacity-80 transition-opacity"
               />
