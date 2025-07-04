@@ -117,7 +117,14 @@ const Index = () => {
     <div className="min-h-screen watermark-background pt-12 pb-20 px-4 md:px-8">
       <div className="max-w-6xl mx-auto">
         <header className="mb-16 text-center animate-slide-down">
+           
             <a 
+                href="https://github.com/dovbyk/DeepScript/blob/main/handwriting_sample.jpeg" 
+                className="absolute top-0 left-0 p-4 text-sm md:text-base text-blue-600 hover:underline"
+              >
+                Handwritten File Format
+            </a>
+          <a 
               href="https://github.com/dovbyk/DeepScript" 
               target="_blank" 
               rel="noopener noreferrer"
@@ -180,7 +187,7 @@ const Index = () => {
                   onClick={() => toggleFontSelectionMethod('upload')}
                   disabled={!canvasText.trim()}
                 >
-                  Upload Your Writing Sample
+                  Upload Your Writing Sample (See the format above)
                 </button>
               </div>
 
