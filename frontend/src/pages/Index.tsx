@@ -122,7 +122,7 @@ const Index = () => {
               href="https://github.com/dovbyk/DeepScript/blob/main/README.md" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="absolute top-0 left-0 p-4 text-sm md:text-base text-white hover:underline"
+              className="absolute top-0 left-0 p-4 text-base md:text-base text-white hover:underline"
             >
               Read Instructions
             </a>
@@ -135,7 +135,7 @@ const Index = () => {
               <img 
                 src="/github.jpg" 
                 alt="GitHub" 
-                className="w-8 h-8 hover:opacity-80 transition-opacity"
+                className="w-10 h-10 hover:opacity-80 transition-opacity"
               />
           </a>
           
@@ -146,7 +146,7 @@ const Index = () => {
               className="max-w-[min(100%,800px)] w-auto h-[clamp(80px,20vmin,200px)] md:h-[clamp(100px,25vmin,300px)]"
             />
           </div>
-          <h2 className="font-agency font-extrabold text-5xl md:text-7xl text-center mb-6">
+          <h2 className="font-agency font-bold text-3xl md:text-5xl text-center mb-6">
             TRANSFORM ANY TEXT INTO A REALISTIC HANDWRITING
           </h2>
         </header>
