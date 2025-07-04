@@ -118,7 +118,7 @@ const Index = () => {
       <div className="max-w-6xl mx-auto">
         <header className="mb-16 text-center animate-slide-down">
             <a 
-              href="https://github.com/your-repo-url" 
+              href="https://github.com/dovbyk/DeepScript" 
               target="_blank" 
               rel="noopener noreferrer"
               className="absolute top-0 right-0 p-4"
