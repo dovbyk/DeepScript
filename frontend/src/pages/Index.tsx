@@ -117,6 +117,19 @@ const Index = () => {
     <div className="min-h-screen watermark-background pt-12 pb-20 px-4 md:px-8">
       <div className="max-w-6xl mx-auto">
         <header className="mb-16 text-center animate-slide-down">
+            <a 
+              href="https://github.com/your-repo-url" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="absolute top-0 right-0 p-4"
+            >
+              <img 
+                src="/github.svg" 
+                alt="GitHub" 
+                className="w-8 h-8 hover:opacity-80 transition-opacity"
+              />
+          </a>
+          
           <div className="flex justify-center mb-6">
             <img 
               src="/logo.png"
