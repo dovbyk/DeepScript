@@ -1,36 +1,40 @@
+#This is an intermediate backend code which lies in repo GEMINI_API. 
+#Had to split into two backends for load balancing 
+
 # import cv2
 # import os
 # import numpy as np
 # import google.generativeai as genai
 
-# genai.configure(api_key="AIzaSyCsFPJPRlBKFF3p7ARWo89zNPXUtsYyz40")
+# GEMINI = os.getenv("GENAI_API_KEY")
 
-# def recognize_character_from_image(image_path):
+# genai.configure(api_key=GEMINI)
+
+# def recognize_characters_from_images(image_paths):
+
 #     model = genai.GenerativeModel("gemini-2.0-flash")
-
-#     with open(image_path, "rb") as f:
-#         image_data = f.read()
-
-#     image_content = {
-#         "mime_type": "image/png",  
-#         "data": image_data
-#     }
-
-#     response = model.generate_content([
-#         "What single handwritten character (a-z, A-Z, 0-9) is shown in this image? Only provide the character/number in response and nothing else",
-#         image_content
-#     ])
-
-#     character = response.text.strip()
-
-#     if len(character) != 1:
-#         print(f"Warning: Gemini returned multiple characters or unexpected result: '{character}'")
-#         character = character[0]  # take only the first character
-
-#     return character
-
-
-
+#     image_contents = []
+#     for path in image_paths:
+#         with open(path, "rb") as f:
+#             image_data = f.read()
+#         image_contents.append({
+#             "mime_type": "image/png",
+#             "data": image_data
+#         })
+#     prompt = (
+#          "You are given up to 6 images of **individual handwritten characters**, "
+#          "in order from left to right, top to bottom. These characters can be from a-z, A-Z, or 0-9. "
+#           "Please return the exact sequence of characters in that order, with no explanation or extra text. "
+#           "Just a string of characters like 'abcdef' and make your length of response is equal to the received number of images."
+#     )
+#     # Gemini expects a list: [prompt, image1, image2, ...]
+#     response = model.generate_content([prompt] + image_contents)
+#     characters = response.text.strip()
+#     # Defensive: Only take as many characters as images
+#     if len(characters) != len(image_paths):
+#         print(f"Warning: Gemini returned unexpected result: '{characters}' for batch {image_paths}")
+#         characters = characters[:len(image_paths)]
+#     return characters
 
 # def process_uploaded_image(input_image_path):
 #     output_directory = "processed_characters"
@@ -69,22 +73,36 @@
 #     merged_boxes = merge_close_boxes(bounding_boxes)
 #     sorted_boxes = sorted(merged_boxes, key=lambda b: (b[1], b[0]))
 #     extracted_images = []
-    
+#     temp_image_paths = []
+#     batch_size = 6
+#     i = 0
 #     for i, (x, y, w, h) in enumerate(sorted_boxes):
 #         if w > 10 and h > 10:
 #             char_image = binary_image[y:y + h, x:x + w]
-    
 #             temp_path = os.path.join(output_directory, f"temp_{i}.png")
 #             cv2.imwrite(temp_path, 255 - char_image)
+#             print(f"Before : {temp_path}")
+#             temp_image_paths.append(temp_path)
+
+#             # When batch is ready or last image, process batch
+#             if len(temp_image_paths) == batch_size or i == len(sorted_boxes) - 1:
+#                 if i == len(sorted_boxes) - 1:
+#                     print("i has reached the final image")
+#                 recognized_chars = recognize_characters_from_images(temp_image_paths)
+#                 for img_path, char in zip(temp_image_paths, recognized_chars):
+#                     output_path = os.path.join(output_directory, f"{char}.png")    
+#                     counter = 1
+#                     while os.path.exists(output_path):
+#                         base_name = f"{char}_{counter}.png"
+#                         output_path = os.path.join(output_directory, base_name)
+#                         counter += 1
+        
+#                     os.rename(img_path, output_path)
+#                     print(f"Saved: {output_path}")
+#                     extracted_images.append(output_path)
+#                 temp_image_paths = []  # Reset for next batch
+
     
-#             # Recognize character using Gemini
-#             recognized_char = recognize_character_from_image(temp_path)
-    
-#             # Rename final output using recognized character
-#             output_path = os.path.join(output_directory, f"{recognized_char}.png")
-#             os.rename(temp_path, output_path)
-    
-#             print(f"Saved: {output_path}")
-#             extracted_images.append(output_path)
-    
+#     print(f"Final value of i: {i}")    
+#     print(f"Length of extracted images: {len(extracted_images)}")
 #     return extracted_images
